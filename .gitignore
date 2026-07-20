@@ -1,0 +1,11 @@
+node_modules/
+dist/
+qa/
+.npm-cache/
+.npmrc
+
+.DS_Store
+*.swp
+
+npm-debug.log*
+pnpm-debug.log*
