@@ -36,6 +36,16 @@ describe("KFD website", () => {
     expect(screen.getAllByText("909015753@qq.com").length).toBeGreaterThan(0);
   });
 
+  test("public pages do not expose excluded customer names or placeholders", () => {
+    for (const path of ["/", "/solutions", "/contact"]) {
+      window.history.pushState({}, "", path);
+      const view = render(<App />);
+      expect(screen.queryByText(/海尔|海信|正大|海氏海诺/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/备案号待补充|ICP number pending/)).not.toBeInTheDocument();
+      view.unmount();
+    }
+  });
+
   test("primary navigation opens all jump pages", () => {
     render(<App />);
 

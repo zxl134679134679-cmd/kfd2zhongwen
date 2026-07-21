@@ -1559,6 +1559,18 @@ h2 {
   .solution-page-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .home-quality-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .home-quality-card:nth-child(2) {
+    border-right: 0;
+  }
+
+  .home-quality-card:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
 }
 
 @media (max-width: 760px) {
@@ -1588,6 +1600,13 @@ h2 {
     font-size: 17px;
   }
 
+  .home-clean-section,
+  .home-products,
+  .home-quality {
+    padding-top: 66px;
+    padding-bottom: 66px;
+  }
+
   .hero-actions,
   .quote-panel {
     align-items: stretch;
@@ -1612,6 +1631,7 @@ h2 {
   .form-grid,
   .solution-strip ul,
   .featured-product-grid,
+  .home-quality-cards,
   .solution-page-grid {
     grid-template-columns: 1fr;
   }
@@ -1627,16 +1647,32 @@ h2 {
     min-height: 320px;
   }
 
-  .home-quality-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+  .home-quality-card,
   .home-quality-card:nth-child(2) {
     border-right: 0;
+    border-bottom: 1px solid var(--line);
   }
 
-  .home-quality-card:nth-child(-n + 2) {
-    border-bottom: 1px solid var(--line);
+  .home-quality-card:last-child {
+    border-bottom: 0;
+  }
+
+  .solution-card > img {
+    height: 230px;
+  }
+
+  .solution-card-copy {
+    padding: 24px 22px;
+  }
+
+  .solution-card dl div {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .mobile-drawer-actions {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .contact-card {
