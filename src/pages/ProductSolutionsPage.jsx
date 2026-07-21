@@ -1,6 +1,7 @@
 import { ArrowRight, CheckCircle, CirclesFour, Package, ShieldCheck, Stack, Wrench } from "@phosphor-icons/react";
 import { InquiryCta } from "../components/InquiryCta.jsx";
 import { PageHero } from "../components/PageHero.jsx";
+import { ResponsiveImage } from "../components/ResponsiveImage.jsx";
 import { products } from "../content.js";
 
 const productDetails = {
@@ -45,7 +46,7 @@ export function ProductSolutionsPage({ onOpenQuote }) {
           <div className="solution-grid">
             {products.map((product, index) => (
               <article className="solution-card" id={product.id} key={product.id}>
-                <figure><img src={product.image} alt={product.alt} /></figure>
+                <figure><ResponsiveImage src={product.image} alt={product.alt} loading="lazy" /></figure>
                 <div className="solution-card-copy">
                   <span>0{index + 1}</span>
                   <h3>{product.name}</h3>

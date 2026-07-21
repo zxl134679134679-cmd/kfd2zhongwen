@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowRight } from "@phosphor-icons/react";
+import { ResponsiveImage } from "./ResponsiveImage.jsx";
 
 export function PageHero({ eyebrow, title, description, image, imageAlt, anchorHref, anchorLabel, children, onOpenQuote }) {
   return (
@@ -18,7 +19,7 @@ export function PageHero({ eyebrow, title, description, image, imageAlt, anchorH
         </div>
       </div>
       <figure className="page-hero-image">
-        <img src={image} alt={imageAlt} />
+        <ResponsiveImage src={image} alt={imageAlt} fetchPriority="high" />
       </figure>
     </section>
   );

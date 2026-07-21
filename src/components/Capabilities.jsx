@@ -1,5 +1,6 @@
 import { ArrowRight, CheckCircle } from "@phosphor-icons/react";
 import { certifications, company } from "../content.js";
+import { ResponsiveImage } from "./ResponsiveImage.jsx";
 
 export function Capabilities({ lang = "zh" }) {
   return (
@@ -22,7 +23,7 @@ export function Capabilities({ lang = "zh" }) {
         <div className="cert-card-grid">
           {certifications.map((cert) => (
             <a className="cert-card" key={cert.name} href={cert.file} target="_blank" rel="noreferrer">
-              <img src={cert.image} alt={`${cert.name} ${cert.label[lang]}`} loading="lazy" />
+              <ResponsiveImage src={cert.image} alt={`${cert.name} ${cert.label[lang]}`} sizes="(max-width: 760px) calc(100vw - 28px), 25vw" loading="lazy" />
               <strong>{cert.name}</strong>
               <span>{cert.label[lang]}</span>
               <em>{lang === "zh" ? "查看 PDF" : "View PDF"}</em>
@@ -50,7 +51,7 @@ export function Capabilities({ lang = "zh" }) {
               {lang === "zh" ? "联系工厂" : "Contact Factory"} <ArrowRight size={19} />
             </a>
           </div>
-          <img src="/assets/product-oversize-flexo-printed.png" alt={lang === "zh" ? "超大规格水印印刷纸箱展示" : "Oversized flexo printed carton display"} loading="lazy" />
+          <ResponsiveImage src="/assets/product-oversize-flexo-printed.png" alt={lang === "zh" ? "超大规格水印印刷纸箱展示" : "Oversized flexo printed carton display"} sizes="(max-width: 760px) calc(100vw - 28px), 50vw" loading="lazy" />
         </div>
       </div>
     </section>

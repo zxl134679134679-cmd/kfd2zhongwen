@@ -1,5 +1,6 @@
 import { ArrowRight } from "@phosphor-icons/react";
 import { copy, products } from "../content.js";
+import { ResponsiveImage } from "./ResponsiveImage.jsx";
 
 export function Products({ lang = "zh", onOpenQuote }) {
   const t = copy[lang];
@@ -26,7 +27,7 @@ export function Products({ lang = "zh", onOpenQuote }) {
           {products.map((product) => (
             <article className="product-card" key={product.id} id={product.id}>
               <div className="product-image">
-                <img src={product.image} alt={product.alt[lang]} loading="lazy" />
+                <ResponsiveImage src={product.image} alt={product.alt[lang]} sizes="(max-width: 760px) calc(100vw - 28px), 25vw" loading="lazy" />
               </div>
               <div className="product-card-copy">
                 <h3>{product.name[lang]}</h3>

@@ -1,6 +1,7 @@
 import { ArrowRight, CheckCircle } from "@phosphor-icons/react";
 import { useState } from "react";
 import { factoryHighlights, solutions } from "../content.js";
+import { ResponsiveImage } from "./ResponsiveImage.jsx";
 
 const factoryMedia = [
   {
@@ -95,7 +96,7 @@ export function Manufacturing({ lang = "zh" }) {
 
         <div className="factory-visual">
           <div className="factory-main-image">
-            <img src={current.image} alt={current.title[lang]} loading="lazy" />
+            <ResponsiveImage src={current.image} alt={current.title[lang]} sizes="(max-width: 760px) calc(100vw - 28px), 50vw" loading="lazy" />
             <div className="factory-caption">
               <strong>{current.title[lang]}</strong>
               <span>{current.text[lang]}</span>
@@ -110,7 +111,7 @@ export function Manufacturing({ lang = "zh" }) {
                 onClick={() => setSelected(index)}
                 aria-label={lang === "zh" ? `查看${item.title.zh}` : `View ${item.title.en}`}
               >
-                <img src={item.image} alt="" loading="lazy" />
+                <ResponsiveImage src={item.image} alt="" sizes="140px" loading="lazy" />
               </button>
             ))}
           </div>

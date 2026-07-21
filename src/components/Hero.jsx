@@ -1,5 +1,6 @@
 import { ArrowRight } from "@phosphor-icons/react";
 import { copy, heroMetrics } from "../content.js";
+import { ResponsiveImage } from "./ResponsiveImage.jsx";
 
 export function Hero({ lang = "zh", onOpenQuote }) {
   const t = copy[lang];
@@ -7,7 +8,13 @@ export function Hero({ lang = "zh", onOpenQuote }) {
   return (
     <section className="hero" id="top">
       <div className="hero-bg" aria-hidden="true">
-        <img src="/assets/hero-gate-new.png" alt="" />
+        <ResponsiveImage
+          src="/assets/hero-gate-new.png"
+          mobileSrc="/assets/optimized/hero-gate-760.webp"
+          desktopSrc="/assets/optimized/hero-gate-1448.webp"
+          alt=""
+          fetchPriority="high"
+        />
       </div>
       <div className="container hero-inner">
         <div className="hero-content">

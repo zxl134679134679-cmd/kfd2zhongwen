@@ -8,6 +8,7 @@ import { Manufacturing } from "./components/Manufacturing.jsx";
 import { Process } from "./components/Process.jsx";
 import { Products } from "./components/Products.jsx";
 import { QuoteDialog } from "./components/QuoteDialog.jsx";
+import { ResponsiveImage } from "./components/ResponsiveImage.jsx";
 import { certifications, company, copy, products, solutions } from "./content.js";
 
 function HomePage({ lang, onOpenQuote }) {
@@ -29,8 +30,8 @@ function HomePage({ lang, onOpenQuote }) {
             </a>
           </div>
           <div className="home-image-pair">
-            <img src="/assets/kfd-kba-printing-final.png" alt={lang === "zh" ? "1米62高宝印刷机" : "KBA 1620 printing machine"} loading="lazy" />
-            <img src="/assets/workshop-panorama.png" alt={lang === "zh" ? "凯丰德包装生产车间" : "KFD Packaging production workshop"} loading="lazy" />
+            <ResponsiveImage src="/assets/kfd-kba-printing-final.png" alt={lang === "zh" ? "1米62高宝印刷机" : "KBA 1620 printing machine"} sizes="(max-width: 760px) calc(100vw - 28px), 50vw" loading="lazy" />
+            <ResponsiveImage src="/assets/workshop-panorama.png" alt={lang === "zh" ? "凯丰德包装生产车间" : "KFD Packaging production workshop"} sizes="(max-width: 760px) calc(100vw - 28px), 50vw" loading="lazy" />
           </div>
         </div>
       </section>
@@ -49,7 +50,7 @@ function HomePage({ lang, onOpenQuote }) {
           <div className="featured-product-grid">
             {featured.map((product) => (
               <a className="featured-product-card" href={`/products#${product.id}`} key={product.id}>
-                <img src={product.image} alt={product.alt[lang]} loading="lazy" />
+                <ResponsiveImage src={product.image} alt={product.alt[lang]} sizes="(max-width: 760px) calc(100vw - 28px), 33vw" loading="lazy" />
                 <span>{product.name[lang]}</span>
               </a>
             ))}
@@ -77,7 +78,7 @@ function HomePage({ lang, onOpenQuote }) {
                 rel="noreferrer"
                 aria-label={`${lang === "zh" ? "查看" : "View"} ${certificate.name} ${certificate.label[lang]}`}
               >
-                <img src={certificate.image} alt="" loading="lazy" />
+                <ResponsiveImage src={certificate.image} alt="" sizes="(max-width: 760px) calc(100vw - 28px), 25vw" loading="lazy" />
                 <span>{certificate.name}</span>
                 <small>{certificate.label[lang]}</small>
               </a>
@@ -93,7 +94,7 @@ function PageHero({ eyebrow, title, text, image }) {
   return (
     <section className="page-hero">
       <div className="page-hero-bg">
-        <img src={image} alt="" />
+        <ResponsiveImage src={image} alt="" fetchPriority="high" />
       </div>
       <div className="container page-hero-inner">
         <p className="eyebrow">{eyebrow}</p>
@@ -137,7 +138,7 @@ function SolutionsPage({ lang, onOpenQuote }) {
             const product = products.find((item) => item.id === solution.productId);
             return (
               <article className="solution-card" key={solution.id}>
-                <img src={solution.image} alt={solution.alt[lang]} loading="lazy" />
+                <ResponsiveImage src={solution.image} alt={solution.alt[lang]} sizes="(max-width: 760px) calc(100vw - 28px), 50vw" loading="lazy" />
                 <div className="solution-card-copy">
                   <h2>{solution.title[lang]}</h2>
                   <p>{solution.text[lang]}</p>

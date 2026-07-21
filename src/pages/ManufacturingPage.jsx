@@ -1,6 +1,7 @@
 import { CheckCircle, Factory, Headset, Package, ShieldCheck, Stack, Wrench } from "@phosphor-icons/react";
 import { InquiryCta } from "../components/InquiryCta.jsx";
 import { PageHero } from "../components/PageHero.jsx";
+import { ResponsiveImage } from "../components/ResponsiveImage.jsx";
 import { metrics } from "../content.js";
 
 const capabilities = [
@@ -49,7 +50,7 @@ export function ManufacturingPage({ onOpenQuote }) {
           <div className="equipment-list">
             {capabilities.map((item, index) => (
               <article className={index % 2 ? "is-reversed" : ""} key={item.number}>
-                <figure><img src={item.image} alt={item.alt} /></figure>
+                <figure><ResponsiveImage src={item.image} alt={item.alt} loading="lazy" /></figure>
                 <div><span>{item.number}</span><h3>{item.title}</h3><p>{item.text}</p></div>
               </article>
             ))}

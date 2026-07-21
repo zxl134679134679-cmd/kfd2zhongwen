@@ -1,6 +1,7 @@
 import { List, X } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { copy, navLinks } from "../content.js";
+import { ResponsiveImage } from "./ResponsiveImage.jsx";
 
 export function Header({ currentPath = "/", lang = "zh", onLanguageChange, onOpenQuote }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -75,7 +76,12 @@ export function Header({ currentPath = "/", lang = "zh", onLanguageChange, onOpe
     <header className="site-header">
       <div className="container header-inner">
         <a className="brand" href="/" aria-label="青岛凯丰德包装首页">
-          <img src="/assets/kfd-logo-final.png" alt="凯丰德包装 KFD Packaging" />
+          <ResponsiveImage
+            src="/assets/kfd-logo-final.png"
+            mobileSrc="/assets/optimized/kfd-logo-340.webp"
+            desktopSrc="/assets/optimized/kfd-logo-520.webp"
+            alt="凯丰德包装 KFD Packaging"
+          />
         </a>
 
         <button

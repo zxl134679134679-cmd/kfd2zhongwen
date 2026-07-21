@@ -1,11 +1,18 @@
 import { company, navLinks } from "../content.js";
+import { ResponsiveImage } from "./ResponsiveImage.jsx";
 
 export function Footer({ lang = "zh" }) {
   return (
     <footer className="site-footer" id="contact">
       <div className="container footer-grid">
         <div className="footer-brand">
-          <img src="/assets/kfd-logo-final.png" alt="凯丰德包装 KFD Packaging" />
+          <ResponsiveImage
+            src="/assets/kfd-logo-final.png"
+            mobileSrc="/assets/optimized/kfd-logo-340.webp"
+            desktopSrc="/assets/optimized/kfd-logo-520.webp"
+            alt="凯丰德包装 KFD Packaging"
+            loading="lazy"
+          />
           <p>
             {lang === "zh"
               ? "专注高品质纸箱制造与瓦楞包装定制，为国内外客户提供稳定、高效、可信赖的纸制包装解决方案。"
