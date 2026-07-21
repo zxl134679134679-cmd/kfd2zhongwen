@@ -46,6 +46,24 @@ describe("KFD website", () => {
     expect(screen.getByText("Factory direct")).toBeInTheDocument();
   });
 
+  test("navigation drawer contains language and quote actions and restores focus", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const trigger = screen.getByRole("button", { name: "打开菜单" });
+
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("navigation", { name: "移动导航" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "在菜单中切换到英文" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "在菜单中发起询价" })).toBeInTheDocument();
+    expect(document.body.style.overflow).toBe("hidden");
+
+    await user.keyboard("{Escape}");
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(trigger).toHaveFocus();
+    expect(document.body.style.overflow).toBe("");
+  });
+
   test("products page opens and keeps printed cartons as the first offer", () => {
     window.history.pushState({}, "", "/products");
     render(<App />);
