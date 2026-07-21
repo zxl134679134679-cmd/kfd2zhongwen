@@ -346,7 +346,7 @@ img {
 }
 
 .home-clean-section {
-  padding: 96px 0 36px;
+  padding: 82px 0 28px;
   background: #fff;
 }
 
@@ -400,6 +400,8 @@ img {
 }
 
 .home-products {
+  padding-top: 82px;
+  padding-bottom: 82px;
   background: #fff;
 }
 
@@ -447,45 +449,69 @@ img {
   opacity: 1;
 }
 
-.home-proof {
-  padding: 56px 0 96px;
+.home-quality {
+  padding: 78px 0 92px;
+  background: #f6f8fb;
+}
+
+.home-quality-layout {
+  display: grid;
+  grid-template-columns: 0.78fr 1.4fr;
+  gap: 58px;
+  align-items: center;
+}
+
+.home-quality-copy > p:not(.section-kicker) {
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.home-quality-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--line);
   background: #fff;
 }
 
-.home-proof-inner {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.home-proof article {
-  padding: 34px 28px;
+.home-quality-card {
+  min-width: 0;
+  padding: 22px 18px;
   border-right: 1px solid var(--line);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.home-proof article:last-child {
+.home-quality-card:last-child {
   border-right: 0;
 }
 
-.home-proof strong {
+.home-quality-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 38px rgba(3, 23, 47, 0.08);
+}
+
+.home-quality-card img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: top center;
+  border: 1px solid var(--line);
+}
+
+.home-quality-card span,
+.home-quality-card small {
   display: block;
+}
+
+.home-quality-card span {
+  margin-top: 14px;
   color: var(--navy);
-  font-size: 34px;
-  line-height: 1;
+  font-weight: 900;
 }
 
-.home-proof small {
-  margin-left: 6px;
-  color: var(--orange);
-  font-size: 13px;
-}
-
-.home-proof span {
-  display: block;
-  margin-top: 12px;
+.home-quality-card small {
+  margin-top: 5px;
   color: var(--muted);
-  font-weight: 800;
+  line-height: 1.45;
 }
 
 .page-hero {
@@ -1429,7 +1455,8 @@ h2 {
   .cert-grid,
   .about-grid,
   .solution-strip,
-  .home-showcase {
+  .home-showcase,
+  .home-quality-layout {
     grid-template-columns: 1fr;
   }
 
@@ -1512,7 +1539,6 @@ h2 {
   .footer-grid,
   .form-grid,
   .solution-strip ul,
-  .home-proof-inner,
   .featured-product-grid,
   .solution-page-grid {
     grid-template-columns: 1fr;
@@ -1529,8 +1555,15 @@ h2 {
     min-height: 320px;
   }
 
-  .home-proof article {
+  .home-quality-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .home-quality-card:nth-child(2) {
     border-right: 0;
+  }
+
+  .home-quality-card:nth-child(-n + 2) {
     border-bottom: 1px solid var(--line);
   }
 

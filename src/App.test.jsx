@@ -10,14 +10,21 @@ describe("KFD website", () => {
     vi.restoreAllMocks();
   });
 
-  test("renders the clean homepage with factory proof and printed cartons first", () => {
+  test("renders factory, product and certification proof without repeating capacity metrics", () => {
     render(<App />);
 
     expect(screen.getByRole("heading", { name: /高品质纸箱制造/ })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "看得见的工厂实力" })).toBeInTheDocument();
-    expect(screen.getAllByText("彩印纸箱").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("300,000").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("200,000").length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: "以可核验资料建立合作信任" })).toBeInTheDocument();
+    expect(screen.getAllByText("300,000")).toHaveLength(1);
+    expect(screen.getAllByText("200,000")).toHaveLength(1);
+    expect(screen.getByRole("link", { name: /查看 ISO9001/ })).toHaveAttribute(
+      "href",
+      "/certificates/iso9001-quality.pdf",
+    );
+    expect(screen.getByText(/© 2026 青岛凯丰德包装有限公司/)).toBeInTheDocument();
+    expect(screen.queryByText(/备案号待补充|ICP number pending/)).not.toBeInTheDocument();
+    expect(screen.getAllByText("909015753@qq.com").length).toBeGreaterThan(0);
   });
 
   test("primary navigation opens all jump pages", () => {

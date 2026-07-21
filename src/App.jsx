@@ -8,7 +8,7 @@ import { Manufacturing } from "./components/Manufacturing.jsx";
 import { Process } from "./components/Process.jsx";
 import { Products } from "./components/Products.jsx";
 import { QuoteDialog } from "./components/QuoteDialog.jsx";
-import { company, copy, heroMetrics, products } from "./content.js";
+import { certifications, company, copy, products } from "./content.js";
 
 function HomePage({ lang, onOpenQuote }) {
   const featured = products.slice(0, 3);
@@ -57,14 +57,32 @@ function HomePage({ lang, onOpenQuote }) {
         </div>
       </section>
 
-      <section className="home-proof">
-        <div className="container home-proof-inner">
-          {heroMetrics.map(({ value, unit, label }) => (
-            <article key={label.zh}>
-              <strong>{value}<small>{typeof unit === "string" ? unit : unit[lang]}</small></strong>
-              <span>{label[lang]}</span>
-            </article>
-          ))}
+      <section className="home-quality" aria-labelledby="home-quality-title">
+        <div className="container home-quality-layout">
+          <div className="home-quality-copy">
+            <p className="section-kicker">{t.homeQualityKicker}</p>
+            <h2 id="home-quality-title">{t.homeQualityTitle}</h2>
+            <p>{t.homeQualityText}</p>
+            <a className="section-link" href="/certifications">
+              {t.viewCertificates} <ArrowRight size={18} />
+            </a>
+          </div>
+          <div className="home-quality-cards">
+            {certifications.map((certificate) => (
+              <a
+                className="home-quality-card"
+                href={certificate.file}
+                key={certificate.name}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`${lang === "zh" ? "查看" : "View"} ${certificate.name} ${certificate.label[lang]}`}
+              >
+                <img src={certificate.image} alt="" loading="lazy" />
+                <span>{certificate.name}</span>
+                <small>{certificate.label[lang]}</small>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
     </main>

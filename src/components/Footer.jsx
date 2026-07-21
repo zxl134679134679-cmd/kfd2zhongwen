@@ -36,7 +36,7 @@ export function Footer({ lang = "zh" }) {
         </div>
       </div>
       <div className="container footer-bottom">
-        © 2026 {lang === "zh" ? company.name : company.englishName}　{lang === "zh" ? "备案号待补充" : "ICP number pending"}
+        © 2026 {lang === "zh" ? company.name : company.englishName}
       </div>
     </footer>
   );
