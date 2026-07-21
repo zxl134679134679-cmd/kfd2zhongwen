@@ -62,6 +62,12 @@ describe("KFD website", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(trigger).toHaveFocus();
     expect(document.body.style.overflow).toBe("");
+
+    await user.click(screen.getByRole("button", { name: "切换到英文" }));
+    const englishTrigger = screen.getByRole("button", { name: "Open menu" });
+    await user.click(englishTrigger);
+    expect(englishTrigger).toHaveAccessibleName("Close menu");
+    expect(screen.getByRole("navigation", { name: "Mobile navigation" })).toBeInTheDocument();
   });
 
   test("products page opens and keeps printed cartons as the first offer", () => {

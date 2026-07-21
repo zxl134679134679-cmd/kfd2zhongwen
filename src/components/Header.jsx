@@ -6,6 +6,9 @@ export function Header({ currentPath = "/", lang = "zh", onLanguageChange, onOpe
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleRef = useRef(null);
   const t = copy[lang];
+  const menuLabel = lang === "zh"
+    ? (menuOpen ? "关闭菜单" : "打开菜单")
+    : (menuOpen ? "Close menu" : "Open menu");
 
   const closeMenu = (restoreFocus = false) => {
     setMenuOpen(false);
@@ -40,7 +43,7 @@ export function Header({ currentPath = "/", lang = "zh", onLanguageChange, onOpe
           ref={toggleRef}
           className="menu-toggle"
           type="button"
-          aria-label={menuOpen ? "关闭菜单" : "打开菜单"}
+          aria-label={menuLabel}
           aria-expanded={menuOpen}
           aria-controls="mobile-navigation"
           onClick={() => (menuOpen ? closeMenu() : setMenuOpen(true))}
@@ -83,7 +86,7 @@ export function Header({ currentPath = "/", lang = "zh", onLanguageChange, onOpe
         aria-hidden={!menuOpen}
         inert={!menuOpen}
       >
-        <nav className="mobile-nav" aria-label="移动导航">
+        <nav className="mobile-nav" aria-label={lang === "zh" ? "移动导航" : "Mobile navigation"}>
           {navLinks.map((link) => (
             <a key={link.key} href={link.href} onClick={() => closeMenu()}>
               {link.label[lang]}
