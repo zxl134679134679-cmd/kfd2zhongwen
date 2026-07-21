@@ -14,6 +14,8 @@ export function Hero({ lang = "zh", onOpenQuote }) {
           desktopSrc="/assets/optimized/hero-gate-1448.webp"
           alt=""
           fetchPriority="high"
+          width={1448}
+          height={1086}
         />
       </div>
       <div className="container hero-inner">
@@ -33,7 +35,7 @@ export function Hero({ lang = "zh", onOpenQuote }) {
             <button className="button button-primary" type="button" onClick={onOpenQuote}>
               {t.quote} <ArrowRight size={20} weight="bold" />
             </button>
-            <a className="button button-ghost" href="#factory">
+            <a className="button button-ghost" href="/factory">
               {t.viewFactory} <ArrowRight size={20} />
             </a>
           </div>

@@ -63,7 +63,6 @@ img {
   height: 86px;
   color: #fff;
   background: linear-gradient(180deg, rgba(3, 23, 47, 0.86), rgba(3, 23, 47, 0.42) 74%, transparent);
-  backdrop-filter: blur(8px);
 }
 
 .header-inner {
@@ -209,7 +208,6 @@ img {
   object-position: 68% center;
   opacity: 0.96;
   transform: scale(1.035);
-  animation: slowZoom 18s ease-in-out infinite alternate;
 }
 
 .hero-bg::after {
@@ -231,7 +229,6 @@ img {
 .hero-content {
   width: min(650px, 100%);
   padding-top: 26px;
-  animation: fadeUp 0.86s ease both;
 }
 
 .eyebrow,
@@ -317,7 +314,6 @@ img {
   background: linear-gradient(135deg, #062449, #041b38);
   border: 1px solid rgba(232, 200, 109, 0.35);
   box-shadow: var(--shadow);
-  animation: fadeUp 0.9s ease 0.12s both;
 }
 
 .hero-metrics article {
@@ -465,16 +461,6 @@ img {
   background: #f6f8fb;
 }
 
-.home-clean-section,
-.home-products,
-.home-quality,
-.solution-page,
-.products-section,
-.cert-section {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 900px;
-}
-
 .home-quality-layout {
   display: grid;
   grid-template-columns: 0.78fr 1.4fr;
@@ -569,7 +555,6 @@ img {
 .page-hero-inner {
   position: relative;
   z-index: 1;
-  animation: fadeUp 0.72s ease both;
 }
 
 .page-hero h1 {
@@ -1622,8 +1607,6 @@ h2 {
   .site-header {
     height: 74px;
     background: rgba(3, 23, 47, 0.92);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
   }
 
   .brand img {
@@ -1640,7 +1623,6 @@ h2 {
   }
 
   .hero-bg img {
-    animation: none;
     transform: scale(1.035);
   }
 
@@ -1847,12 +1829,14 @@ h2 {
   }
 }
 
-@keyframes slowZoom {
-  from {
-    transform: scale(1.02);
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  .hero-content,
+  .page-hero-inner {
+    animation: fadeUp 0.45s ease-out both;
   }
-  to {
-    transform: scale(1.07);
+
+  .hero-metrics {
+    animation: fadeUp 0.45s ease-out 0.08s both;
   }
 }
 

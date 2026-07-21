@@ -81,6 +81,8 @@ export function Header({ currentPath = "/", lang = "zh", onLanguageChange, onOpe
             mobileSrc="/assets/optimized/kfd-logo-340.webp"
             desktopSrc="/assets/optimized/kfd-logo-520.webp"
             alt="凯丰德包装 KFD Packaging"
+            width={520}
+            height={195}
           />
         </a>
 

@@ -12,6 +12,8 @@ export function Footer({ lang = "zh" }) {
             desktopSrc="/assets/optimized/kfd-logo-520.webp"
             alt="凯丰德包装 KFD Packaging"
             loading="lazy"
+            width={520}
+            height={195}
           />
           <p>
             {lang === "zh"
