@@ -88,6 +88,7 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", returnFocu
   const [form, setForm] = useState({ ...emptyForm, product: initialProduct });
   const dialogRef = useRef(null);
   const closeRef = useRef(null);
+  const successHeadingRef = useRef(null);
   const productRef = useRef(null);
   const sizeRef = useRef(null);
   const quantityRef = useRef(null);
@@ -158,6 +159,10 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", returnFocu
       });
     };
   }, [initialProduct, onClose, open, returnFocusRef]);
+
+  useEffect(() => {
+    if (status === "success") successHeadingRef.current?.focus();
+  }, [status]);
 
   if (!open) return null;
 
@@ -258,10 +263,10 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", returnFocu
         </button>
 
         {status === "success" ? (
-          <div className="quote-success">
+          <div className="quote-success" role="status" aria-live="polite">
             <CheckCircle size={58} weight="light" aria-hidden="true" />
             <p className="eyebrow dark">REQUEST RECEIVED</p>
-            <h2 id="quote-title">{t.received}</h2>
+            <h2 ref={successHeadingRef} id="quote-title" tabIndex="-1">{t.received}</h2>
             <p>
               {t.successText}
               <br />

@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { App } from "./App.jsx";
@@ -20,6 +20,8 @@ describe("KFD website", () => {
 
   afterEach(() => {
     Element.prototype.scrollTo = originalElementScrollTo;
+    document.body.style.overflow = "";
+    vi.unstubAllGlobals();
   });
 
   test("renders factory, product and certification proof without repeating capacity metrics", () => {
@@ -92,6 +94,71 @@ describe("KFD website", () => {
     expect(screen.getByRole("navigation", { name: "Mobile navigation" })).toBeInTheDocument();
   });
 
+  test("navigation drawer contains focus within its toggle, links, and actions", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const toggle = screen.getByRole("button", { name: "打开菜单" });
+
+    await user.click(toggle);
+    const drawerNavigation = screen.getByRole("navigation", { name: "移动导航" });
+    const firstLink = within(drawerNavigation).getByRole("link", { name: "首页" });
+    const quoteAction = screen.getByRole("button", { name: "在菜单中发起询价" });
+    const backgroundBrand = screen.getByRole("link", { name: "青岛凯丰德包装首页" });
+
+    await waitFor(() => expect(firstLink).toHaveFocus());
+
+    quoteAction.focus();
+    await user.tab();
+    expect(toggle).toHaveFocus();
+    expect(backgroundBrand).not.toHaveFocus();
+
+    await user.tab({ shift: true });
+    expect(quoteAction).toHaveFocus();
+
+    firstLink.focus();
+    await user.tab({ shift: true });
+    expect(toggle).toHaveFocus();
+
+    await user.tab();
+    expect(firstLink).toHaveFocus();
+    expect(backgroundBrand).not.toHaveFocus();
+  });
+
+  test("navigation drawer closes when the viewport crosses into desktop layout", async () => {
+    const listeners = new Set();
+    const mediaQueryList = {
+      matches: false,
+      media: "(min-width: 1081px)",
+      onchange: null,
+      addEventListener: vi.fn((type, listener) => {
+        if (type === "change") listeners.add(listener);
+      }),
+      removeEventListener: vi.fn((type, listener) => {
+        if (type === "change") listeners.delete(listener);
+      }),
+      dispatchEvent: vi.fn(),
+    };
+    vi.stubGlobal("matchMedia", vi.fn(() => mediaQueryList));
+    document.body.style.overflow = "clip";
+    const user = userEvent.setup();
+    render(<App />);
+    const toggle = screen.getByRole("button", { name: "打开菜单" });
+
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(document.body.style.overflow).toBe("hidden");
+
+    act(() => {
+      mediaQueryList.matches = true;
+      listeners.forEach((listener) => listener({ matches: true, media: mediaQueryList.media }));
+    });
+
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(document.querySelector(".mobile-drawer")).toHaveAttribute("aria-hidden", "true");
+    expect(document.body.style.overflow).toBe("clip");
+    expect(mediaQueryList.removeEventListener).toHaveBeenCalledWith("change", expect.any(Function));
+  });
+
   test("responsive drawer explicitly fills the viewport", () => {
     const tabletStyles = styles.slice(
       styles.indexOf("@media (max-width: 1080px)"),
@@ -143,6 +210,35 @@ describe("KFD website", () => {
     await user.click(screen.getByRole("button", { name: "咨询彩印品牌包装" }));
     expect(screen.getByRole("radio", { name: "彩印纸箱" })).toBeChecked();
     expect(screen.queryByText(/海尔|海信|正大|海氏海诺/)).not.toBeInTheDocument();
+  });
+
+  test("general solutions CTA requires a product and submits only the selected product string", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal("fetch", fetchMock);
+    window.__KFD_QUOTE_WEBHOOK_URL__ = "https://n8n.example/webhook/quote";
+    window.history.pushState({}, "", "/solutions");
+    const user = userEvent.setup();
+    const { container } = render(<App />);
+
+    await user.click(container.querySelector(".quote-panel .button-primary"));
+    const products = screen.getAllByRole("radio");
+    expect(products.every((product) => !product.checked)).toBe(true);
+
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    expect(screen.getByText("请选择产品类型")).toHaveAttribute("role", "alert");
+
+    await user.click(screen.getByRole("radio", { name: "彩印纸箱" }));
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    await user.type(screen.getByLabelText(/包装尺寸/), "4500 x 2600 mm");
+    await user.type(screen.getByLabelText(/预计数量/), "1000 pcs");
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    await user.type(screen.getByLabelText(/邮箱 \/ 微信 \/ WhatsApp/), "buyer@example.com");
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    const payload = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(typeof payload.product).toBe("string");
+    expect(payload.product).toBe("彩印纸箱");
   });
 
   test("factory page keeps its six solution-strip labels after solution data changes", () => {
@@ -396,6 +492,11 @@ describe("KFD website", () => {
     expect(payload.notes).toBe("Need export packaging samples.");
     expect(payload.contact).toBe("buyer@example.com / WhatsApp +1 555 0100");
     expect(payload.source).toBe("kfdpack-website");
+
+    const receivedHeading = await screen.findByRole("heading", { name: "需求已记录" });
+    await waitFor(() => expect(receivedHeading).toHaveFocus());
+    expect(screen.getByRole("status")).toHaveTextContent("需求已记录");
+    expect(screen.getByRole("status")).toHaveTextContent("感谢提交包装需求");
 
     globalThis.fetch = originalFetch;
     delete window.__KFD_QUOTE_WEBHOOK_URL__;

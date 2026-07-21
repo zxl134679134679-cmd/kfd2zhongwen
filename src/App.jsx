@@ -170,7 +170,7 @@ function SolutionsPage({ lang, onOpenQuote }) {
             <strong>{lang === "zh" ? "把尺寸和数量发给我们" : "Send us your size and quantity"}</strong>
             <span>{lang === "zh" ? "我们会根据材料、工艺和交付地审核后报价。" : "We review material, process and destination before quoting."}</span>
           </div>
-          <button className="button button-primary" type="button" onClick={onOpenQuote}>
+          <button className="button button-primary" type="button" onClick={() => onOpenQuote()}>
             {copy[lang].quote} <ArrowRight size={19} />
           </button>
         </div>
