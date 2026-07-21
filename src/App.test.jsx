@@ -55,6 +55,24 @@ describe("KFD website", () => {
     expect(productHeadings[0]).toHaveTextContent("彩印纸箱");
   });
 
+  test("solutions use real images, practical proof fields and a preselected quote", async () => {
+    const user = userEvent.setup();
+    window.history.pushState({}, "", "/solutions");
+    render(<App />);
+
+    expect(screen.getByRole("img", { name: "彩印品牌包装实拍" })).toHaveAttribute(
+      "src",
+      "/assets/product-color-printing-power.png",
+    );
+    expect(screen.getAllByText("适用场景")).toHaveLength(4);
+    expect(screen.getAllByText("核心能力")).toHaveLength(4);
+    expect(screen.getAllByText("询价资料")).toHaveLength(4);
+
+    await user.click(screen.getByRole("button", { name: "咨询彩印品牌包装" }));
+    expect(screen.getByRole("radio", { name: "彩印纸箱" })).toBeChecked();
+    expect(screen.queryByText(/海尔|海信|正大|海氏海诺/)).not.toBeInTheDocument();
+  });
+
   test("certification links point to uploaded PDF files", () => {
     window.history.pushState({}, "", "/certifications");
     render(<App />);

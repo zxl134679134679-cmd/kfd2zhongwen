@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, CheckCircle } from "@phosphor-icons/react";
+import { ArrowRight } from "@phosphor-icons/react";
 import { Capabilities } from "./components/Capabilities.jsx";
 import { Footer } from "./components/Footer.jsx";
 import { Header } from "./components/Header.jsx";
@@ -8,7 +8,7 @@ import { Manufacturing } from "./components/Manufacturing.jsx";
 import { Process } from "./components/Process.jsx";
 import { Products } from "./components/Products.jsx";
 import { QuoteDialog } from "./components/QuoteDialog.jsx";
-import { certifications, company, copy, products } from "./content.js";
+import { certifications, company, copy, products, solutions } from "./content.js";
 
 function HomePage({ lang, onOpenQuote }) {
   const featured = products.slice(0, 3);
@@ -119,25 +119,6 @@ function ProductsPage({ lang, onOpenQuote }) {
 }
 
 function SolutionsPage({ lang, onOpenQuote }) {
-  const cards = [
-    {
-      title: { zh: "彩印品牌包装", en: "Printed Brand Packaging" },
-      text: { zh: "把包装变成客户第一眼能感知的质感：更清晰的视觉、更稳定的成型、更适合出口展示。", en: "Packaging that looks credible at first sight: cleaner print, stable structure and export-ready presentation." },
-    },
-    {
-      title: { zh: "出口运输包装", en: "Export Transport Packaging" },
-      text: { zh: "围绕承压、堆码、防护和物流距离设计结构，让包装更适合长距离运输。", en: "Designed around compression, stacking, protection and long-distance logistics." },
-    },
-    {
-      title: { zh: "工业产品包装", en: "Industrial Product Packaging" },
-      text: { zh: "根据产品尺寸、重量和装箱方式，匹配纸板、内衬、开槽、模切与成型方案。", en: "Board, inserts, slotting, die-cutting and forming based on product size, weight and loading method." },
-    },
-    {
-      title: { zh: "大尺寸定制包装", en: "Large-size Custom Packaging" },
-      text: { zh: "支持超大规格水印纸箱，适合大件产品、批量出货和定制防护需求。", en: "Oversized flexo printed cartons for large products, batch shipment and custom protection." },
-    },
-  ];
-
   const checklist = lang === "zh"
     ? ["产品尺寸：长 × 宽 × 高", "预计数量与交付地", "材质 / 楞型 / 承重要求", "印刷颜色与设计文件", "是否需要打样或出口资料"]
     : ["Product size: L × W × H", "Estimated quantity and destination", "Material / flute / loading requirements", "Printing colors and artwork files", "Sample or export document needs"];
@@ -152,13 +133,31 @@ function SolutionsPage({ lang, onOpenQuote }) {
       />
       <section className="section solution-page">
         <div className="container solution-page-grid">
-          {cards.map(({ title, text }) => (
-            <article key={title.zh}>
-              <CheckCircle size={26} weight="fill" />
-              <h2>{title[lang]}</h2>
-              <p>{text[lang]}</p>
-            </article>
-          ))}
+          {solutions.map((solution) => {
+            const product = products.find((item) => item.id === solution.productId);
+            return (
+              <article className="solution-card" key={solution.id}>
+                <img src={solution.image} alt={solution.alt[lang]} loading="lazy" />
+                <div className="solution-card-copy">
+                  <h2>{solution.title[lang]}</h2>
+                  <p>{solution.text[lang]}</p>
+                  <dl>
+                    <div><dt>{lang === "zh" ? "适用场景" : "Applications"}</dt><dd>{solution.application[lang]}</dd></div>
+                    <div><dt>{lang === "zh" ? "核心能力" : "Capability"}</dt><dd>{solution.capability[lang]}</dd></div>
+                    <div><dt>{lang === "zh" ? "询价资料" : "RFQ inputs"}</dt><dd>{solution.rfq[lang]}</dd></div>
+                  </dl>
+                  <button
+                    className="section-link"
+                    type="button"
+                    aria-label={`${lang === "zh" ? "咨询" : "Ask about "}${solution.title[lang]}`}
+                    onClick={() => onOpenQuote(product.name[lang])}
+                  >
+                    {copy[lang].quote} <ArrowRight size={18} />
+                  </button>
+                </div>
+              </article>
+            );
+          })}
         </div>
         <div className="container rfq-guide">
           <span>{lang === "zh" ? "询价建议" : "RFQ checklist"}</span>
@@ -257,7 +256,7 @@ export function App() {
   const pages = {
     "/": <HomePage lang={lang} onOpenQuote={() => openQuote()} />,
     "/products": <ProductsPage lang={lang} onOpenQuote={openQuote} />,
-    "/solutions": <SolutionsPage lang={lang} onOpenQuote={() => openQuote()} />,
+    "/solutions": <SolutionsPage lang={lang} onOpenQuote={openQuote} />,
     "/factory": <FactoryPage lang={lang} />,
     "/certifications": <CertificationsPage lang={lang} />,
     "/contact": <ContactPage lang={lang} onOpenQuote={() => openQuote()} />,

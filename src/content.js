@@ -125,13 +125,51 @@ export const factoryHighlights = [
   },
 ];
 
-export const solutionCards = [
-  { zh: "彩印品牌包装", en: "Printed Brand Packaging" },
-  { zh: "出口运输包装", en: "Export Packaging" },
-  { zh: "工业产品包装", en: "Industrial Packaging" },
-  { zh: "大尺寸定制包装", en: "Large-size Custom Packaging" },
-  { zh: "普通周转纸箱", en: "Regular Shipping Cartons" },
-  { zh: "纸板供应方案", en: "Board Supply Solution" },
+export const solutions = [
+  {
+    id: "printed-brand",
+    productId: "printed-carton",
+    image: "/assets/product-color-printing-power.png",
+    alt: { zh: "彩印品牌包装实拍", en: "Printed brand packaging" },
+    title: { zh: "彩印品牌包装", en: "Printed Brand Packaging" },
+    text: { zh: "兼顾品牌展示、结构成型与运输保护。", en: "Balances brand presentation, structural forming and transport protection." },
+    application: { zh: "品牌包装、工业产品、出口展示", en: "Brand packaging, industrial products, export display" },
+    capability: { zh: "彩印、模切、开槽、钉箱与粘箱", en: "Color printing, die-cutting, slotting, stitching and gluing" },
+    rfq: { zh: "尺寸、数量、设计文件、印刷颜色", en: "Size, quantity, artwork and print colors" },
+  },
+  {
+    id: "export-transport",
+    productId: "standard-carton",
+    image: "/assets/product-standard-carton.png",
+    alt: { zh: "出口运输纸箱实拍", en: "Export transport cartons" },
+    title: { zh: "出口运输包装", en: "Export Transport Packaging" },
+    text: { zh: "围绕堆码、防护与物流距离匹配纸板和箱型。", en: "Matches board and structure to stacking, protection and transport distance." },
+    application: { zh: "长途运输、仓储堆码、出口交付", en: "Long-distance transport, warehousing and export delivery" },
+    capability: { zh: "多楞型纸板、开槽、模切与成型", en: "Multiple flute options, slotting, die-cutting and forming" },
+    rfq: { zh: "产品重量、装箱方式、交付地、堆码要求", en: "Product weight, packing method, destination and stacking needs" },
+  },
+  {
+    id: "industrial",
+    productId: "corrugated-board",
+    image: "/assets/product-corrugated-board.png",
+    alt: { zh: "工业产品瓦楞包装实拍", en: "Industrial corrugated packaging" },
+    title: { zh: "工业产品包装", en: "Industrial Product Packaging" },
+    text: { zh: "根据尺寸、重量和装箱方式匹配材料与结构。", en: "Matches material and structure to product size, weight and packing method." },
+    application: { zh: "设备配件、工业制品、批量周转", en: "Equipment parts, industrial goods and volume turnover" },
+    capability: { zh: "纸板配套、结构定制、内衬与成型建议", en: "Board supply, structural customization, inserts and forming advice" },
+    rfq: { zh: "产品尺寸、重量、数量、保护要求", en: "Product size, weight, quantity and protection needs" },
+  },
+  {
+    id: "oversize",
+    productId: "oversize-carton",
+    image: "/assets/product-oversize-flexo-printed.png",
+    alt: { zh: "超大规格纸箱实拍", en: "Oversized corrugated cartons" },
+    title: { zh: "大尺寸定制包装", en: "Large-size Custom Packaging" },
+    text: { zh: "面向大件产品和批量出货定制大幅面包装。", en: "Large-format packaging for oversized products and batch shipment." },
+    application: { zh: "大件产品、设备运输、强化防护", en: "Large products, equipment transport and reinforced protection" },
+    capability: { zh: "超大规格水印、结构定制与边角防护", en: "Oversized flexo print, custom structure and edge protection" },
+    rfq: { zh: "外形尺寸、重量、吊装方式、运输路线", en: "Dimensions, weight, handling method and transport route" },
+  },
 ];
 
 export const certifications = [
