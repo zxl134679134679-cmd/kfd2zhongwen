@@ -185,6 +185,52 @@ describe("KFD website", () => {
     expect(brandRule).toContain("z-index: 2;");
   });
 
+  test("serves responsive WebP hero and brand images with the right priority", () => {
+    const { container } = render(<App />);
+    const heroPicture = container.querySelector(".hero-bg picture");
+    const brandPicture = container.querySelector(".brand picture");
+    const heroImage = heroPicture?.querySelector("img");
+
+    expect(heroPicture?.querySelector('source[media="(max-width: 760px)"]')).toHaveAttribute(
+      "srcset",
+      "/assets/optimized/hero-gate-760.webp",
+    );
+    expect(heroPicture?.querySelector("source:not([media])")).toHaveAttribute(
+      "srcset",
+      "/assets/optimized/hero-gate-1448.webp",
+    );
+    expect(heroImage).toHaveAttribute("src", "/assets/hero-gate-new.png");
+    expect(heroImage).toHaveAttribute("fetchpriority", "high");
+    expect(heroImage).toHaveAttribute("decoding", "async");
+    expect(brandPicture?.querySelector('source[media="(max-width: 760px)"]')).toHaveAttribute(
+      "srcset",
+      "/assets/optimized/kfd-logo-340.webp",
+    );
+  });
+
+  test("keeps below-the-fold homepage imagery lazy and asynchronously decoded", () => {
+    render(<App />);
+    const factoryImage = screen.getByRole("img", { name: "1米62高宝印刷机" });
+
+    expect(factoryImage.closest("picture")).not.toBeNull();
+    expect(factoryImage).toHaveAttribute("loading", "lazy");
+    expect(factoryImage).toHaveAttribute("decoding", "async");
+  });
+
+  test("mobile styles remove persistent compositing work and shorten long content", () => {
+    const mobileStyles = styles.slice(
+      styles.indexOf("@media (max-width: 760px)"),
+      styles.indexOf("@keyframes fadeUp"),
+    );
+
+    expect(mobileStyles).toMatch(/\.site-header\s*\{[^}]*backdrop-filter:\s*none;/s);
+    expect(mobileStyles).toMatch(/\.hero-bg img\s*\{[^}]*animation:\s*none;/s);
+    expect(mobileStyles).toMatch(/\.home-clean-section,[\s\S]*padding-top:\s*56px;/);
+    expect(mobileStyles).toMatch(/\.featured-product-card[\s\S]*height:\s*280px;/);
+    expect(styles).toContain("content-visibility: auto;");
+    expect(styles).toContain("@media (hover: hover) and (pointer: fine)");
+  });
+
   test("products page opens and keeps printed cartons as the first offer", () => {
     window.history.pushState({}, "", "/products");
     render(<App />);
