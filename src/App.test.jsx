@@ -1,7 +1,10 @@
+import { readFileSync } from "node:fs";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { App } from "./App.jsx";
+
+const styles = readFileSync("src/styles.css", "utf8");
 
 const originalElementScrollTo = Element.prototype.scrollTo;
 let scrollToMock;
@@ -87,6 +90,32 @@ describe("KFD website", () => {
     await user.click(englishTrigger);
     expect(englishTrigger).toHaveAccessibleName("Close menu");
     expect(screen.getByRole("navigation", { name: "Mobile navigation" })).toBeInTheDocument();
+  });
+
+  test("responsive drawer explicitly fills the viewport", () => {
+    const tabletStyles = styles.slice(
+      styles.indexOf("@media (max-width: 1080px)"),
+      styles.indexOf("@media (max-width: 760px)"),
+    );
+    const drawerStart = tabletStyles.indexOf("  .mobile-drawer {");
+    const drawerEnd = tabletStyles.indexOf("\n  }", drawerStart);
+    const drawerRule = tabletStyles.slice(drawerStart, drawerEnd);
+
+    expect(drawerStart).toBeGreaterThan(-1);
+    expect(drawerRule).toContain("width: 100vw;");
+    expect(drawerRule).toContain("height: 100dvh;");
+  });
+
+  test("responsive brand stays above the open drawer", () => {
+    const tabletStyles = styles.slice(
+      styles.indexOf("@media (max-width: 1080px)"),
+      styles.indexOf("@media (max-width: 760px)"),
+    );
+    const brandRule = tabletStyles.match(/\.brand \{([^}]*)\}/)?.[1];
+
+    expect(brandRule).toBeDefined();
+    expect(brandRule).toContain("position: relative;");
+    expect(brandRule).toContain("z-index: 2;");
   });
 
   test("products page opens and keeps printed cartons as the first offer", () => {

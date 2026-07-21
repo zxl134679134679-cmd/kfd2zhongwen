@@ -1489,6 +1489,11 @@ h2 {
     display: none;
   }
 
+  .brand {
+    position: relative;
+    z-index: 2;
+  }
+
   .menu-toggle {
     display: inline-flex;
     margin-left: auto;
@@ -1499,6 +1504,8 @@ h2 {
   .mobile-drawer {
     position: fixed;
     inset: 0;
+    width: 100vw;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     padding: 112px max(24px, calc((100vw - 720px) / 2)) 34px;
