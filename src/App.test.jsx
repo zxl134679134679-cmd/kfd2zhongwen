@@ -1,13 +1,22 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { App } from "./App.jsx";
+
+const originalElementScrollTo = Element.prototype.scrollTo;
+let scrollToMock;
 
 describe("KFD website", () => {
   beforeEach(() => {
     window.history.pushState({}, "", "/");
     delete window.__KFD_QUOTE_WEBHOOK_URL__;
     vi.restoreAllMocks();
+    scrollToMock = vi.fn();
+    Element.prototype.scrollTo = scrollToMock;
+  });
+
+  afterEach(() => {
+    Element.prototype.scrollTo = originalElementScrollTo;
   });
 
   test("renders factory, product and certification proof without repeating capacity metrics", () => {
@@ -126,22 +135,42 @@ describe("KFD website", () => {
 
   test("quote validation focuses the first error and scrolls each step to the top", async () => {
     const user = userEvent.setup();
-    const scrollTo = vi.fn();
-    Element.prototype.scrollTo = scrollTo;
     const { container } = render(<App />);
 
     await user.click(screen.getAllByRole("button", { name: "发起询价" })[0]);
+    const product = screen.getAllByRole("radio")[0];
+    let productSemanticsAtFocus = false;
+    product.addEventListener("focus", () => {
+      const errorId = product.getAttribute("aria-describedby");
+      productSemanticsAtFocus = product.getAttribute("aria-invalid") === "true" && Boolean(document.getElementById(errorId));
+    });
     await user.click(container.querySelector(".quote-dialog .button-primary"));
     expect(screen.getByText("请选择产品类型")).toBeInTheDocument();
-    expect(screen.getAllByRole("radio")[0]).toHaveFocus();
+    await waitFor(() => {
+      expect(product).toHaveFocus();
+      expect(product).toHaveAttribute("aria-invalid", "true");
+      expect(document.getElementById(product.getAttribute("aria-describedby"))).toBeInTheDocument();
+    });
+    expect(productSemanticsAtFocus).toBe(true);
 
-    await user.click(screen.getAllByRole("radio")[0]);
+    await user.click(product);
     await user.click(container.querySelector(".quote-dialog .button-primary"));
-    expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: "auto" });
+    expect(scrollToMock).toHaveBeenCalledWith({ top: 0, behavior: "auto" });
 
+    const size = screen.getByLabelText(/包装尺寸/);
+    let sizeSemanticsAtFocus = false;
+    size.addEventListener("focus", () => {
+      const errorId = size.getAttribute("aria-describedby");
+      sizeSemanticsAtFocus = size.getAttribute("aria-invalid") === "true" && Boolean(document.getElementById(errorId));
+    });
     await user.click(container.querySelector(".quote-dialog .button-primary"));
     expect(screen.getByText("请填写包装尺寸")).toBeInTheDocument();
-    expect(screen.getByLabelText(/包装尺寸/)).toHaveFocus();
+    await waitFor(() => {
+      expect(size).toHaveFocus();
+      expect(size).toHaveAttribute("aria-invalid", "true");
+      expect(document.getElementById(size.getAttribute("aria-describedby"))).toBeInTheDocument();
+    });
+    expect(sizeSemanticsAtFocus).toBe(true);
   });
 
   test("quote dialog isolates the page and restores the opening control", async () => {
@@ -154,6 +183,41 @@ describe("KFD website", () => {
     await user.keyboard("{Escape}");
     expect(document.querySelector(".site-shell")).not.toHaveAttribute("inert");
     expect(opener).toHaveFocus();
+  });
+
+  test("quote opened from the drawer restores the visible menu trigger", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const menuTrigger = screen.getByRole("button", { name: "打开菜单" });
+
+    await user.click(menuTrigger);
+    await user.click(screen.getByRole("button", { name: "在菜单中发起询价" }));
+    expect(menuTrigger).toHaveAttribute("aria-expanded", "false");
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(menuTrigger).toHaveAccessibleName("打开菜单");
+    expect(menuTrigger).toHaveAttribute("aria-expanded", "false");
+    expect(document.querySelector(".mobile-drawer")).toHaveAttribute("aria-hidden", "true");
+    expect(document.querySelector(".mobile-drawer")).not.toHaveClass("is-open");
+    expect(menuTrigger).toHaveFocus();
+  });
+
+  test("quote state survives a language rerender while open", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getAllByRole("button", { name: "发起询价" })[0]);
+    await user.click(screen.getAllByRole("radio")[0]);
+    await user.click(screen.getByRole("button", { name: /下一步/ }));
+    const size = screen.getByLabelText(/包装尺寸/);
+    await user.type(size, "4500 x 2600 mm");
+
+    await user.click(document.querySelector(".header-actions .language-switch"));
+
+    expect(screen.getByLabelText("Quote progress: step 2 of 3")).toBeInTheDocument();
+    expect(screen.getByLabelText(/Package size/)).toHaveValue("4500 x 2600 mm");
+    expect(document.body.style.overflow).toBe("hidden");
   });
 
   test("quote dialog traps tab navigation and restores the prior body overflow", async () => {
@@ -226,6 +290,10 @@ describe("KFD website", () => {
     await user.click(container.querySelector(".quote-dialog .button-primary"));
     await user.type(screen.getByLabelText(/包装尺寸/), "4500 x 2600 mm");
     await user.type(screen.getByLabelText(/预计数量/), "1000 pcs");
+    await user.type(screen.getByLabelText(/材质 \/ 楞型/), "5-ply BC flute");
+    await user.type(screen.getByLabelText(/印刷需求/), "3-color flexo");
+    await user.type(screen.getByLabelText(/交付地区/), "Los Angeles");
+    await user.type(screen.getByLabelText(/补充说明/), "Need export packaging samples.");
     await user.click(container.querySelector(".quote-dialog .button-primary"));
     const contact = screen.getByLabelText(/邮箱 \/ 微信 \/ WhatsApp/);
     await user.type(contact, "buyer@example.com");
@@ -234,6 +302,20 @@ describe("KFD website", () => {
     expect(await screen.findByText(/提交失败/)).toBeInTheDocument();
     expect(contact).toHaveValue("buyer@example.com");
     expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole("button", { name: /返回/ }));
+    expect(screen.getByLabelText(/包装尺寸/)).toHaveValue("4500 x 2600 mm");
+    expect(screen.getByLabelText(/预计数量/)).toHaveValue("1000 pcs");
+    expect(screen.getByLabelText(/材质 \/ 楞型/)).toHaveValue("5-ply BC flute");
+    expect(screen.getByLabelText(/印刷需求/)).toHaveValue("3-color flexo");
+    expect(screen.getByLabelText(/交付地区/)).toHaveValue("Los Angeles");
+    expect(screen.getByLabelText(/补充说明/)).toHaveValue("Need export packaging samples.");
+
+    await user.click(screen.getByRole("button", { name: /返回/ }));
+    expect(screen.getAllByRole("radio")[0]).toBeChecked();
+    await user.click(screen.getByRole("button", { name: /下一步/ }));
+    await user.click(screen.getByRole("button", { name: /下一步/ }));
+    expect(screen.getByLabelText(/邮箱 \/ 微信 \/ WhatsApp/)).toHaveValue("buyer@example.com");
     globalThis.fetch = originalFetch;
   });
 

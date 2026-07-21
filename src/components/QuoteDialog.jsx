@@ -168,11 +168,7 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", returnFocu
 
   const focusFirstInvalid = (fieldNames) => {
     const first = fieldNames.find((name) => fieldRefs[name]);
-    const field = fieldRefs[first]?.current;
-    field?.focus();
-    requestAnimationFrame(() => {
-      if (document.activeElement !== field) field?.focus();
-    });
+    requestAnimationFrame(() => fieldRefs[first]?.current?.focus());
   };
 
   const moveToStep = (nextStep) => {

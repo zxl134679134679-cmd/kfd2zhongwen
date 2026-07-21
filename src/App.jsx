@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight } from "@phosphor-icons/react";
 import { Capabilities } from "./components/Capabilities.jsx";
 import { Footer } from "./components/Footer.jsx";
@@ -241,11 +241,12 @@ export function App() {
   const [selectedProduct, setSelectedProduct] = useState("");
   const quoteTriggerRef = useRef(null);
 
-  const openQuote = (product = "") => {
-    quoteTriggerRef.current = document.activeElement;
+  const openQuote = (product = "", returnFocusTarget = document.activeElement) => {
+    quoteTriggerRef.current = returnFocusTarget;
     setSelectedProduct(product);
     setQuoteOpen(true);
   };
+  const closeQuote = useCallback(() => setQuoteOpen(false), []);
 
   const currentPath = ["/", "/products", "/solutions", "/factory", "/certifications", "/contact"].includes(window.location.pathname)
     ? window.location.pathname
@@ -267,7 +268,12 @@ export function App() {
   return (
     <>
       <div className="site-shell" inert={quoteOpen} aria-hidden={quoteOpen ? "true" : undefined}>
-        <Header currentPath={currentPath} lang={lang} onLanguageChange={setLang} onOpenQuote={() => openQuote()} />
+        <Header
+          currentPath={currentPath}
+          lang={lang}
+          onLanguageChange={setLang}
+          onOpenQuote={(returnFocusTarget) => openQuote("", returnFocusTarget)}
+        />
         {pages[currentPath]}
         <Footer lang={lang} />
       </div>
@@ -276,7 +282,7 @@ export function App() {
         open={quoteOpen}
         initialProduct={selectedProduct}
         returnFocusRef={quoteTriggerRef}
-        onClose={() => setQuoteOpen(false)}
+        onClose={closeQuote}
       />
     </>
   );

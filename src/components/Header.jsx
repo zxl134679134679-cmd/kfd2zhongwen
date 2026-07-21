@@ -74,7 +74,7 @@ export function Header({ currentPath = "/", lang = "zh", onLanguageChange, onOpe
             <i>/</i>
             <span className={lang === "en" ? "active" : ""}>EN</span>
           </button>
-          <button className="button button-primary header-cta" type="button" onClick={onOpenQuote}>
+          <button className="button button-primary header-cta" type="button" onClick={() => onOpenQuote()}>
             {t.quote}
           </button>
         </div>
@@ -110,7 +110,7 @@ export function Header({ currentPath = "/", lang = "zh", onLanguageChange, onOpe
             aria-label={lang === "zh" ? "在菜单中发起询价" : "Get a quote from menu"}
             onClick={() => {
               closeMenu();
-              onOpenQuote();
+              onOpenQuote(toggleRef.current);
             }}
           >
             {t.quote}
