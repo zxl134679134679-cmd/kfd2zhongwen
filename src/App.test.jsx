@@ -202,10 +202,14 @@ describe("KFD website", () => {
     expect(heroImage).toHaveAttribute("src", "/assets/hero-gate-new.png");
     expect(heroImage).toHaveAttribute("fetchpriority", "high");
     expect(heroImage).toHaveAttribute("decoding", "async");
+    expect(heroImage).toHaveAttribute("width", "1448");
+    expect(heroImage).toHaveAttribute("height", "1086");
     expect(brandPicture?.querySelector('source[media="(max-width: 760px)"]')).toHaveAttribute(
       "srcset",
       "/assets/optimized/kfd-logo-340.webp",
     );
+    expect(brandPicture?.querySelector("img")).toHaveAttribute("width", "520");
+    expect(brandPicture?.querySelector("img")).toHaveAttribute("height", "195");
   });
 
   test("keeps below-the-fold homepage imagery lazy and asynchronously decoded", () => {
@@ -215,20 +219,28 @@ describe("KFD website", () => {
     expect(factoryImage.closest("picture")).not.toBeNull();
     expect(factoryImage).toHaveAttribute("loading", "lazy");
     expect(factoryImage).toHaveAttribute("decoding", "async");
+    expect(factoryImage).toHaveAttribute("fetchpriority", "low");
   });
 
-  test("mobile styles remove persistent compositing work and shorten long content", () => {
+  test("styles keep document height stable and avoid persistent compositing work", () => {
     const mobileStyles = styles.slice(
       styles.indexOf("@media (max-width: 760px)"),
       styles.indexOf("@keyframes fadeUp"),
     );
 
-    expect(mobileStyles).toMatch(/\.site-header\s*\{[^}]*backdrop-filter:\s*none;/s);
-    expect(mobileStyles).toMatch(/\.hero-bg img\s*\{[^}]*animation:\s*none;/s);
     expect(mobileStyles).toMatch(/\.home-clean-section,[\s\S]*padding-top:\s*56px;/);
     expect(mobileStyles).toMatch(/\.featured-product-card[\s\S]*height:\s*280px;/);
-    expect(styles).toContain("content-visibility: auto;");
+    expect(styles).not.toContain("content-visibility:");
+    expect(styles).not.toContain("contain-intrinsic-size:");
+    expect(styles).not.toContain("slowZoom");
+    expect(styles).not.toMatch(/backdrop-filter:\s*blur/);
+    expect(styles).toContain("@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine)");
     expect(styles).toContain("@media (hover: hover) and (pointer: fine)");
+  });
+
+  test("hero factory action opens the factory page instead of a missing hash target", () => {
+    const { container } = render(<App />);
+    expect(container.querySelector(".hero-actions a")).toHaveAttribute("href", "/factory");
   });
 
   test("products page opens and keeps printed cartons as the first offer", () => {
