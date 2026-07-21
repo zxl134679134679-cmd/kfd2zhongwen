@@ -91,6 +91,17 @@ describe("KFD website", () => {
     expect(screen.queryByText(/海尔|海信|正大|海氏海诺/)).not.toBeInTheDocument();
   });
 
+  test("factory page keeps its six solution-strip labels after solution data changes", () => {
+    window.history.pushState({}, "", "/factory");
+    render(<App />);
+
+    expect(screen.getByRole("heading", { name: "工厂实力" })).toBeInTheDocument();
+    expect(screen.getByText("彩印品牌包装")).toBeInTheDocument();
+    expect(screen.getByText("普通周转纸箱")).toBeInTheDocument();
+    expect(screen.getByText("纸板供应方案")).toBeInTheDocument();
+    expect(document.querySelectorAll(".solution-strip li")).toHaveLength(6);
+  });
+
   test("certification links point to uploaded PDF files", () => {
     window.history.pushState({}, "", "/certifications");
     render(<App />);

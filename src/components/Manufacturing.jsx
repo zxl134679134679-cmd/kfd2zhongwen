@@ -1,6 +1,6 @@
 import { ArrowRight, CheckCircle } from "@phosphor-icons/react";
 import { useState } from "react";
-import { factoryHighlights, solutionCards } from "../content.js";
+import { factoryHighlights, solutions } from "../content.js";
 
 const factoryMedia = [
   {
@@ -65,6 +65,12 @@ const process = [
   { zh: "模切成型", en: "Die-cutting" },
   { zh: "钉箱/粘箱", en: "Stitching / gluing" },
   { zh: "检验发货", en: "QC & shipping" },
+];
+
+const factorySolutionStrip = [
+  ...solutions.map((solution) => solution.title),
+  { zh: "普通周转纸箱", en: "Regular Shipping Cartons" },
+  { zh: "纸板供应方案", en: "Board Supply Solution" },
 ];
 
 export function Manufacturing({ lang = "zh" }) {
@@ -161,7 +167,7 @@ export function Manufacturing({ lang = "zh" }) {
           </strong>
         </div>
         <ul>
-          {solutionCards.map((item) => (
+          {factorySolutionStrip.map((item) => (
             <li key={item.zh}>{item[lang]}</li>
           ))}
         </ul>
