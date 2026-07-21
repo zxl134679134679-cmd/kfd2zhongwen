@@ -123,6 +123,120 @@ describe("KFD website", () => {
     await user.click(screen.getAllByRole("button", { name: "发起询价" })[0]);
     expect(screen.getByRole("dialog", { name: "提交包装需求" })).toBeInTheDocument();
   });
+
+  test("quote validation focuses the first error and scrolls each step to the top", async () => {
+    const user = userEvent.setup();
+    const scrollTo = vi.fn();
+    Element.prototype.scrollTo = scrollTo;
+    const { container } = render(<App />);
+
+    await user.click(screen.getAllByRole("button", { name: "发起询价" })[0]);
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    expect(screen.getByText("请选择产品类型")).toBeInTheDocument();
+    expect(screen.getAllByRole("radio")[0]).toHaveFocus();
+
+    await user.click(screen.getAllByRole("radio")[0]);
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: "auto" });
+
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    expect(screen.getByText("请填写包装尺寸")).toBeInTheDocument();
+    expect(screen.getByLabelText(/包装尺寸/)).toHaveFocus();
+  });
+
+  test("quote dialog isolates the page and restores the opening control", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const opener = screen.getAllByRole("button", { name: "发起询价" })[0];
+
+    await user.click(opener);
+    expect(document.querySelector(".site-shell")).toHaveAttribute("inert");
+    await user.keyboard("{Escape}");
+    expect(document.querySelector(".site-shell")).not.toHaveAttribute("inert");
+    expect(opener).toHaveFocus();
+  });
+
+  test("quote dialog traps tab navigation and restores the prior body overflow", async () => {
+    const user = userEvent.setup();
+    document.body.style.overflow = "clip";
+    render(<App />);
+
+    await user.click(screen.getAllByRole("button", { name: "发起询价" })[0]);
+    const close = screen.getByRole("button", { name: "关闭询价窗口" });
+    const next = screen.getByRole("button", { name: /下一步/ });
+    expect(close).toHaveFocus();
+    expect(document.body.style.overflow).toBe("hidden");
+
+    await user.tab({ shift: true });
+    expect(next).toHaveFocus();
+    await user.tab();
+    expect(close).toHaveFocus();
+
+    screen.getByRole("dialog").focus();
+    await user.tab({ shift: true });
+    expect(next).toHaveFocus();
+
+    await user.keyboard("{Escape}");
+    expect(document.body.style.overflow).toBe("clip");
+    document.body.style.overflow = "";
+  });
+
+  test("quote fields expose required and error relationships", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<App />);
+
+    await user.click(screen.getAllByRole("button", { name: "发起询价" })[0]);
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    const product = screen.getAllByRole("radio")[0];
+    expect(product).toBeRequired();
+    expect(product).toHaveAttribute("aria-invalid", "true");
+    expect(product).toHaveAttribute("aria-describedby", "product-error");
+    expect(screen.getByText("请选择产品类型")).toHaveAttribute("role", "alert");
+
+    await user.click(product);
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    const size = screen.getByLabelText(/包装尺寸/);
+    const quantity = screen.getByLabelText(/预计数量/);
+    expect(size).toBeRequired();
+    expect(quantity).toBeRequired();
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    expect(size).toHaveAttribute("aria-describedby", "size-error");
+    expect(quantity).toHaveAttribute("aria-describedby", "quantity-error");
+
+    await user.type(size, "4500 x 2600 mm");
+    await user.type(quantity, "1000 pcs");
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    const contact = screen.getByLabelText(/邮箱 \/ 微信 \/ WhatsApp/);
+    expect(contact).toBeRequired();
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    expect(contact).toHaveAttribute("aria-invalid", "true");
+    expect(contact).toHaveAttribute("aria-describedby", "email-error");
+  });
+
+  test("quote dialog retains entered data after a failed submission", async () => {
+    const user = userEvent.setup();
+    const originalFetch = globalThis.fetch;
+    const fetchMock = vi.fn().mockResolvedValue({ ok: false, status: 503 });
+    globalThis.fetch = fetchMock;
+    window.__KFD_QUOTE_WEBHOOK_URL__ = "https://n8n.example/webhook/quote";
+    const { container } = render(<App />);
+
+    await user.click(screen.getAllByRole("button", { name: "发起询价" })[0]);
+    await user.click(screen.getAllByRole("radio")[0]);
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    await user.type(screen.getByLabelText(/包装尺寸/), "4500 x 2600 mm");
+    await user.type(screen.getByLabelText(/预计数量/), "1000 pcs");
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+    const contact = screen.getByLabelText(/邮箱 \/ 微信 \/ WhatsApp/);
+    await user.type(contact, "buyer@example.com");
+    await user.click(container.querySelector(".quote-dialog .button-primary"));
+
+    expect(await screen.findByText(/提交失败/)).toBeInTheDocument();
+    expect(contact).toHaveValue("buyer@example.com");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    globalThis.fetch = originalFetch;
+  });
+
   test("quote dialog posts customer requirements to the configured webhook", async () => {
     const user = userEvent.setup();
     const originalFetch = globalThis.fetch;

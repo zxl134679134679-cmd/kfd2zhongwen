@@ -1335,6 +1335,7 @@ h2 {
   padding: 42px;
   background: #fff;
   box-shadow: 0 28px 90px rgba(0, 0, 0, 0.34);
+  overscroll-behavior: contain;
 }
 
 .dialog-close {
@@ -1441,6 +1442,11 @@ h2 {
   color: #c93b2c;
   font-size: 13px;
   font-weight: 800;
+}
+
+.required-mark {
+  margin-left: 4px;
+  color: #c93b2c;
 }
 
 .dialog-actions {
@@ -1692,12 +1698,36 @@ h2 {
     border-bottom: 0;
   }
 
+  .dialog-backdrop {
+    padding: 0;
+    place-items: stretch;
+  }
+
   .quote-dialog {
-    padding: 34px 20px;
+    width: 100%;
+    max-height: 100dvh;
+    min-height: 100dvh;
+    padding: 30px 18px 0;
   }
 
   .quote-progress {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+  }
+
+  .quote-progress span {
+    padding: 9px 5px;
+    font-size: 12px;
+  }
+
+  .dialog-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin: 26px -18px 0;
+    padding: 14px 18px max(14px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.98);
   }
 }
 

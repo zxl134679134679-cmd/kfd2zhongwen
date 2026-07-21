@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight } from "@phosphor-icons/react";
 import { Capabilities } from "./components/Capabilities.jsx";
 import { Footer } from "./components/Footer.jsx";
@@ -239,8 +239,10 @@ export function App() {
   const [lang, setLang] = useState("zh");
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState("");
+  const quoteTriggerRef = useRef(null);
 
   const openQuote = (product = "") => {
+    quoteTriggerRef.current = document.activeElement;
     setSelectedProduct(product);
     setQuoteOpen(true);
   };
@@ -264,13 +266,16 @@ export function App() {
 
   return (
     <>
-      <Header currentPath={currentPath} lang={lang} onLanguageChange={setLang} onOpenQuote={() => openQuote()} />
-      {pages[currentPath]}
-      <Footer lang={lang} />
+      <div className="site-shell" inert={quoteOpen} aria-hidden={quoteOpen ? "true" : undefined}>
+        <Header currentPath={currentPath} lang={lang} onLanguageChange={setLang} onOpenQuote={() => openQuote()} />
+        {pages[currentPath]}
+        <Footer lang={lang} />
+      </div>
       <QuoteDialog
         lang={lang}
         open={quoteOpen}
         initialProduct={selectedProduct}
+        returnFocusRef={quoteTriggerRef}
         onClose={() => setQuoteOpen(false)}
       />
     </>

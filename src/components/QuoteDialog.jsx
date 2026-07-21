@@ -79,13 +79,26 @@ const dialogCopy = {
   },
 };
 
-export function QuoteDialog({ lang = "zh", open, initialProduct = "", onClose }) {
+const RequiredMark = () => <span className="required-mark" aria-hidden="true">*</span>;
+
+export function QuoteDialog({ lang = "zh", open, initialProduct = "", returnFocusRef, onClose }) {
   const [step, setStep] = useState(1);
   const [status, setStatus] = useState("editing");
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({ ...emptyForm, product: initialProduct });
+  const dialogRef = useRef(null);
   const closeRef = useRef(null);
+  const productRef = useRef(null);
+  const sizeRef = useRef(null);
+  const quantityRef = useRef(null);
+  const emailRef = useRef(null);
   const t = dialogCopy[lang];
+  const fieldRefs = {
+    product: productRef,
+    size: sizeRef,
+    quantity: quantityRef,
+    email: emailRef,
+  };
   const webhookUrl = (
     import.meta.env?.VITE_N8N_QUOTE_WEBHOOK_URL ||
     (typeof window !== "undefined" ? window.__KFD_QUOTE_WEBHOOK_URL__ : "") ||
@@ -94,21 +107,57 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", onClose })
 
   useEffect(() => {
     if (!open) return undefined;
+    const previousOverflow = document.body.style.overflow;
     setStep(1);
     setStatus("editing");
     setErrors({});
     setForm({ ...emptyForm, product: initialProduct });
     closeRef.current?.focus();
     const handleKey = (event) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusable = [...dialog.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      )];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const activeIndex = focusable.indexOf(document.activeElement);
+
+      if (!first || !last) {
+        event.preventDefault();
+        dialog.focus();
+      } else if (!dialog.contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+      } else if (activeIndex === -1) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+      } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener("keydown", handleKey);
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", handleKey);
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
+      const opener = returnFocusRef?.current;
+      opener?.focus();
+      requestAnimationFrame(() => {
+        if (document.activeElement !== opener) opener?.focus();
+      });
     };
-  }, [initialProduct, onClose, open]);
+  }, [initialProduct, onClose, open, returnFocusRef]);
 
   if (!open) return null;
 
@@ -117,9 +166,31 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", onClose })
     setErrors((current) => ({ ...current, [field]: "" }));
   };
 
+  const focusFirstInvalid = (fieldNames) => {
+    const first = fieldNames.find((name) => fieldRefs[name]);
+    const field = fieldRefs[first]?.current;
+    field?.focus();
+    requestAnimationFrame(() => {
+      if (document.activeElement !== field) field?.focus();
+    });
+  };
+
+  const moveToStep = (nextStep) => {
+    setErrors({});
+    setStep(nextStep);
+    dialogRef.current?.scrollTo({ top: 0, behavior: "auto" });
+    requestAnimationFrame(() => {
+      if (dialogRef.current?.scrollTop) {
+        dialogRef.current.scrollTo({ top: 0, behavior: "auto" });
+      }
+    });
+  };
+
   const next = () => {
     if (step === 1 && !form.product) {
-      setErrors({ product: t.requiredProduct });
+      const nextErrors = { product: t.requiredProduct };
+      setErrors(nextErrors);
+      focusFirstInvalid(Object.keys(nextErrors));
       return;
     }
     if (step === 2) {
@@ -128,11 +199,11 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", onClose })
       if (!form.quantity.trim()) nextErrors.quantity = t.requiredQuantity;
       if (Object.keys(nextErrors).length) {
         setErrors(nextErrors);
+        focusFirstInvalid(Object.keys(nextErrors));
         return;
       }
     }
-    setErrors({});
-    setStep((current) => Math.min(3, current + 1));
+    moveToStep(Math.min(3, step + 1));
   };
 
   const submit = async (event) => {
@@ -141,6 +212,7 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", onClose })
     if (!form.email.trim()) nextErrors.email = t.requiredContact;
     if (Object.keys(nextErrors).length) {
       setErrors(nextErrors);
+      focusFirstInvalid(Object.keys(nextErrors));
       return;
     }
     setErrors({});
@@ -184,7 +256,7 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", onClose })
 
   return (
     <div className="dialog-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <section className="quote-dialog" role="dialog" aria-modal="true" aria-labelledby="quote-title">
+      <section ref={dialogRef} className="quote-dialog" role="dialog" aria-modal="true" aria-labelledby="quote-title" tabIndex="-1">
         <button ref={closeRef} className="dialog-close" type="button" onClick={onClose} aria-label={t.close}>
           <X size={24} />
         </button>
@@ -213,11 +285,15 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", onClose })
 
             {step === 1 ? (
               <fieldset className="product-options">
-                <legend>{t.legend}</legend>
-                {products.map((product) => (
+                <legend>{t.legend} <RequiredMark /></legend>
+                {products.map((product, index) => (
                   <label key={product.id}>
                     <input
+                      ref={index === 0 ? productRef : undefined}
                       aria-label={product.name[lang]}
+                      aria-invalid={Boolean(errors.product)}
+                      aria-describedby={errors.product ? "product-error" : undefined}
+                      required
                       type="radio"
                       name="product"
                       value={product.name[lang]}
@@ -230,21 +306,39 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", onClose })
                     </span>
                   </label>
                 ))}
-                {errors.product ? <p className="field-error">{errors.product}</p> : null}
+                {errors.product ? <p id="product-error" className="field-error" role="alert">{errors.product}</p> : null}
               </fieldset>
             ) : null}
 
             {step === 2 ? (
               <div className="form-grid">
-                <label>
-                  {t.size}
-                  <input value={form.size} onChange={(event) => update("size", event.target.value)} placeholder={t.sizePh} />
-                  {errors.size ? <span className="field-error">{errors.size}</span> : null}
+                <label htmlFor="quote-size">
+                  <span>{t.size} <RequiredMark /></span>
+                  <input
+                    id="quote-size"
+                    ref={sizeRef}
+                    required
+                    aria-invalid={Boolean(errors.size)}
+                    aria-describedby={errors.size ? "size-error" : undefined}
+                    value={form.size}
+                    onChange={(event) => update("size", event.target.value)}
+                    placeholder={t.sizePh}
+                  />
+                  {errors.size ? <span id="size-error" className="field-error" role="alert">{errors.size}</span> : null}
                 </label>
-                <label>
-                  {t.quantity}
-                  <input value={form.quantity} onChange={(event) => update("quantity", event.target.value)} placeholder={t.quantityPh} />
-                  {errors.quantity ? <span className="field-error">{errors.quantity}</span> : null}
+                <label htmlFor="quote-quantity">
+                  <span>{t.quantity} <RequiredMark /></span>
+                  <input
+                    id="quote-quantity"
+                    ref={quantityRef}
+                    required
+                    aria-invalid={Boolean(errors.quantity)}
+                    aria-describedby={errors.quantity ? "quantity-error" : undefined}
+                    value={form.quantity}
+                    onChange={(event) => update("quantity", event.target.value)}
+                    placeholder={t.quantityPh}
+                  />
+                  {errors.quantity ? <span id="quantity-error" className="field-error" role="alert">{errors.quantity}</span> : null}
                 </label>
                 <label>
                   {t.material}
@@ -267,17 +361,25 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", onClose })
 
             {step === 3 ? (
               <div className="form-grid">
-                <label className="full-field">
-                  {t.contact}
-                  <input value={form.email} onChange={(event) => update("email", event.target.value)} />
-                  {errors.email ? <span className="field-error">{errors.email}</span> : null}
+                <label className="full-field" htmlFor="quote-email">
+                  <span>{t.contact} <RequiredMark /></span>
+                  <input
+                    id="quote-email"
+                    ref={emailRef}
+                    required
+                    aria-invalid={Boolean(errors.email)}
+                    aria-describedby={errors.email ? "email-error" : undefined}
+                    value={form.email}
+                    onChange={(event) => update("email", event.target.value)}
+                  />
+                  {errors.email ? <span id="email-error" className="field-error" role="alert">{errors.email}</span> : null}
                 </label>
               </div>
             ) : null}
 
             <div className="dialog-actions">
               {step > 1 ? (
-                <button className="dialog-back" type="button" onClick={() => setStep((current) => current - 1)}>
+                <button className="dialog-back" type="button" onClick={() => moveToStep(step - 1)}>
                   <ArrowLeft size={18} /> {t.back}
                 </button>
               ) : <span />}
@@ -291,7 +393,7 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", onClose })
                 </button>
               )}
             </div>
-            {errors.submit ? <p className="field-error">{errors.submit}</p> : null}
+            {errors.submit ? <p className="field-error" role="alert">{errors.submit}</p> : null}
           </form>
         )}
       </section>
