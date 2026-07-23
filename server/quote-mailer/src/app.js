@@ -49,20 +49,31 @@ function clientKey(request) {
 export function createRateLimiter({
   limit = 5,
   windowMs = 10 * 60 * 1000,
+  maxClients = 10_000,
   now = () => Date.now(),
 } = {}) {
   const clients = new Map();
 
-  return (key) => {
+  const isLimited = (key) => {
     const currentTime = now();
+    for (const [client, entry] of clients) {
+      if (currentTime - entry.windowStartedAt >= windowMs) clients.delete(client);
+    }
+
     const existing = clients.get(key);
-    if (!existing || currentTime - existing.windowStartedAt >= windowMs) {
+    if (!existing) {
+      if (clients.size >= maxClients) {
+        clients.delete(clients.keys().next().value);
+      }
       clients.set(key, { attempts: 1, windowStartedAt: currentTime });
       return false;
     }
     existing.attempts += 1;
     return existing.attempts > limit;
   };
+
+  isLimited.size = () => clients.size;
+  return isLimited;
 }
 
 export function createQuoteServer({

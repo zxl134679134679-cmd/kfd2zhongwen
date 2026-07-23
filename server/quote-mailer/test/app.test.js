@@ -123,6 +123,25 @@ test("rate limits repeated attempts from the same client address", async () => {
   });
 });
 
+test("bounds and expires in-memory rate-limit entries", () => {
+  let currentTime = 0;
+  const limiter = createRateLimiter({
+    limit: 1,
+    windowMs: 1_000,
+    maxClients: 2,
+    now: () => currentTime,
+  });
+
+  limiter("client-a");
+  limiter("client-b");
+  limiter("client-c");
+  assert.equal(limiter.size(), 2);
+
+  currentTime = 1_001;
+  limiter("client-d");
+  assert.equal(limiter.size(), 1);
+});
+
 test("returns 503 without leaking smtp details when delivery fails", async () => {
   await withServer({
     sendQuoteMail: async () => {
