@@ -38,7 +38,7 @@ describe("KFD website", () => {
     );
     expect(screen.getByText(/© 2026 青岛凯丰德包装有限公司/)).toBeInTheDocument();
     expect(screen.queryByText(/备案号待补充|ICP number pending/)).not.toBeInTheDocument();
-    expect(screen.getAllByText("909015753@qq.com").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("zxl134679@163.com").length).toBeGreaterThan(0);
   });
 
   test("public pages do not expose excluded customer names or placeholders", () => {
@@ -541,7 +541,7 @@ describe("KFD website", () => {
     const [, request] = fetchMock.mock.calls[0];
     const payload = JSON.parse(request.body);
     expect(fetchMock.mock.calls[0][0]).toBe("https://n8n.example/webhook/quote");
-    expect(payload.recipientEmail).toBe("909015753@qq.com");
+    expect(payload.recipientEmail).toBe("zxl134679@163.com");
     expect(payload.size).toBe("4500 x 2600 mm");
     expect(payload.quantity).toBe("1000 pcs");
     expect(payload.material).toBe("5-ply BC flute");

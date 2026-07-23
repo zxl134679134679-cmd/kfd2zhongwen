@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Let the quote request form send a structured customer requirement payload to an n8n Webhook, which can then email the request to `909015753@qq.com`.
+**Goal:** Let the quote request form send a structured customer requirement payload to an n8n Webhook, which can then email the request to `zxl134679@163.com`.
 
 **Architecture:** Keep the website frontend-only. The form submit handler posts JSON to `VITE_N8N_QUOTE_WEBHOOK_URL` when configured, and falls back to a clear local/demo success state when no Webhook is configured. The email sending itself belongs in n8n or a server endpoint so no email password or QQ authorization code is exposed in browser code.
 
@@ -13,7 +13,7 @@
 - Do not store QQ email passwords or SMTP authorization codes in frontend code.
 - Keep the current quote form design; only adjust submit behavior and success/error feedback.
 - Send all customer requirement fields already collected by the form.
-- The recipient email is `909015753@qq.com`.
+- The recipient email is `zxl134679@163.com`.
 - Local development must still work even before the n8n Webhook URL is configured.
 
 ---
@@ -69,7 +69,7 @@ Expected: Vite build succeeds.
 
 - [ ] **Step 1: Document the n8n workflow**
 
-Create a concise Chinese guide: create Webhook node, add Email/SMTP node, send to `909015753@qq.com`, and copy the Production Webhook URL.
+Create a concise Chinese guide: create Webhook node, add Email/SMTP node, send to `zxl134679@163.com`, and copy the Production Webhook URL.
 
 - [ ] **Step 2: Document website environment variable**
 

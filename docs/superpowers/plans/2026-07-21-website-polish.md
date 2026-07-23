@@ -14,7 +14,7 @@
 - Use only the existing real factory, equipment, product, and certification assets.
 - Do not display customer names or customer logos.
 - Do not invent customer cases, test results, performance numbers, or certification claims.
-- Use `909015753@qq.com` as the contact email.
+- Use `zxl134679@163.com` as the contact email.
 - Do not add a WeChat QR code or an empty QR-code placeholder.
 - Do not add routes, replace React/Vite, or add a UI framework.
 - Keep Chinese and English variants for all new public-facing copy.
@@ -64,7 +64,7 @@ test("renders factory, product and certification proof without repeating capacit
   );
   expect(screen.getByText(/© 2026 青岛凯丰德包装有限公司/)).toBeInTheDocument();
   expect(screen.queryByText(/备案号待补充|ICP number pending/)).not.toBeInTheDocument();
-  expect(screen.getAllByText("909015753@qq.com").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("zxl134679@163.com").length).toBeGreaterThan(0);
 });
 ```
 

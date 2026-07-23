@@ -1,6 +1,6 @@
 # 凯丰德官网询价表单接入 n8n 发邮件说明
 
-目标：客户在官网点击“提交需求”后，网站把需求发送到 n8n；n8n 再自动发邮件到 `909015753@qq.com`。
+目标：客户在官网点击“提交需求”后，网站把需求发送到 n8n；n8n 再自动发邮件到 `zxl134679@163.com`。
 
 ## 1. n8n 工作流建议
 
@@ -17,7 +17,7 @@ Webhook 节点建议：
 
 Email 节点建议：
 
-- To：`909015753@qq.com`
+- To：`zxl134679@163.com`
 - Subject：`【官网询价】客户提交了新的包装需求`
 - Body 建议使用 HTML，字段来自 Webhook 的 JSON：
 
@@ -52,7 +52,7 @@ VITE_N8N_QUOTE_WEBHOOK_URL=https://你的n8n域名/webhook/kfd-quote
 ```json
 {
   "source": "kfdpack-website",
-  "recipientEmail": "909015753@qq.com",
+  "recipientEmail": "zxl134679@163.com",
   "language": "zh",
   "submittedAt": "2026-07-20T00:00:00.000Z",
   "pageUrl": "https://example.com/",
