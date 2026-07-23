@@ -12,6 +12,7 @@ const emptyForm = {
   notes: "",
   phone: "",
   email: "",
+  website: "",
 };
 
 const dialogCopy = {
@@ -22,8 +23,8 @@ const dialogCopy = {
     requiredQuantity: "请填写预计数量",
     requiredPhone: "请填写联系电话",
     requiredContact: "请填写邮箱或微信",
-    received: "需求已记录",
-    successText: "感谢提交包装需求。正式上线接入邮箱 / n8n 后，信息将自动发送给业务人员；当前您也可以直接通过电话、微信或邮箱联系我们，我们会尽快跟进。",
+    received: "需求已发送",
+    successText: "感谢提交包装需求。您的资料已经发送给业务人员，我们会尽快与您联系。",
     done: "完成",
     title: "提交包装需求",
     progress: ["选择产品", "填写规格", "联系信息"],
@@ -53,8 +54,8 @@ const dialogCopy = {
     requiredQuantity: "Please enter estimated quantity",
     requiredPhone: "Please enter phone number",
     requiredContact: "Please enter email, WeChat or WhatsApp",
-    received: "Request received",
-    successText: "Thank you for sending your packaging request. Once email / n8n is connected, the request will be sent to our sales team automatically. For now, you can also contact us directly by phone, WeChat or email.",
+    received: "Request sent",
+    successText: "Thank you for sending your packaging request. Your details have been delivered to our sales team, and we will contact you shortly.",
     done: "Done",
     title: "Submit Packaging Request",
     progress: ["Product", "Specifications", "Contact"],
@@ -101,9 +102,8 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", returnFocu
     email: emailRef,
   };
   const webhookUrl = (
-    import.meta.env?.VITE_N8N_QUOTE_WEBHOOK_URL ||
     (typeof window !== "undefined" ? window.__KFD_QUOTE_WEBHOOK_URL__ : "") ||
-    ""
+    "/api/quote"
   ).trim();
 
   useEffect(() => {
@@ -221,7 +221,6 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", returnFocu
 
     const payload = {
       source: "kfdpack-website",
-      recipientEmail: company.email,
       language: lang,
       submittedAt: new Date().toISOString(),
       pageUrl: typeof window !== "undefined" ? window.location.href : "",
@@ -233,17 +232,16 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", returnFocu
       destination: form.destination,
       notes: form.notes,
       contact: form.email,
+      website: form.website,
     };
 
     try {
-      if (webhookUrl) {
-        const response = await fetch(webhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!response.ok) throw new Error(`Webhook request failed: ${response.status}`);
-      }
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error(`Webhook request failed: ${response.status}`);
       setStatus("success");
     } catch {
       setStatus("editing");
@@ -374,6 +372,16 @@ export function QuoteDialog({ lang = "zh", open, initialProduct = "", returnFocu
                     onChange={(event) => update("email", event.target.value)}
                   />
                   {errors.email ? <span id="email-error" className="field-error" role="alert">{errors.email}</span> : null}
+                </label>
+                <label className="quote-honeypot" aria-hidden="true">
+                  Website
+                  <input
+                    name="website"
+                    tabIndex="-1"
+                    autoComplete="off"
+                    value={form.website}
+                    onChange={(event) => update("website", event.target.value)}
+                  />
                 </label>
               </div>
             ) : null}

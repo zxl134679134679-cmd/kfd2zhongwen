@@ -1457,6 +1457,16 @@ h2 {
   grid-column: 1 / -1;
 }
 
+.quote-honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 .field-error {
   color: #c93b2c;
   font-size: 13px;

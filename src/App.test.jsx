@@ -493,6 +493,7 @@ describe("KFD website", () => {
     await user.click(container.querySelector(".quote-dialog .button-primary"));
 
     expect(await screen.findByText(/提交失败/)).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "需求已发送" })).not.toBeInTheDocument();
     expect(contact).toHaveValue("buyer@example.com");
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
@@ -512,12 +513,11 @@ describe("KFD website", () => {
     globalThis.fetch = originalFetch;
   });
 
-  test("quote dialog posts customer requirements to the configured webhook", async () => {
+  test("quote dialog posts customer requirements to the same-origin mail endpoint", async () => {
     const user = userEvent.setup();
     const originalFetch = globalThis.fetch;
     const fetchMock = vi.fn().mockResolvedValue({ ok: true });
     globalThis.fetch = fetchMock;
-    window.__KFD_QUOTE_WEBHOOK_URL__ = "https://n8n.example/webhook/quote";
 
     const { container } = render(<App />);
 
@@ -540,8 +540,9 @@ describe("KFD website", () => {
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     const [, request] = fetchMock.mock.calls[0];
     const payload = JSON.parse(request.body);
-    expect(fetchMock.mock.calls[0][0]).toBe("https://n8n.example/webhook/quote");
-    expect(payload.recipientEmail).toBe("zxl134679@163.com");
+    expect(fetchMock.mock.calls[0][0]).toBe("/api/quote");
+    expect(payload.recipientEmail).toBeUndefined();
+    expect(payload.website).toBe("");
     expect(payload.size).toBe("4500 x 2600 mm");
     expect(payload.quantity).toBe("1000 pcs");
     expect(payload.material).toBe("5-ply BC flute");
@@ -551,12 +552,11 @@ describe("KFD website", () => {
     expect(payload.contact).toBe("buyer@example.com / WhatsApp +1 555 0100");
     expect(payload.source).toBe("kfdpack-website");
 
-    const receivedHeading = await screen.findByRole("heading", { name: "需求已记录" });
+    const receivedHeading = await screen.findByRole("heading", { name: "需求已发送" });
     await waitFor(() => expect(receivedHeading).toHaveFocus());
-    expect(screen.getByRole("status")).toHaveTextContent("需求已记录");
+    expect(screen.getByRole("status")).toHaveTextContent("需求已发送");
     expect(screen.getByRole("status")).toHaveTextContent("感谢提交包装需求");
 
     globalThis.fetch = originalFetch;
-    delete window.__KFD_QUOTE_WEBHOOK_URL__;
   });
 });
