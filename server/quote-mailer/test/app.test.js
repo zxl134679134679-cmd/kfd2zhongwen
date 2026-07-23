@@ -145,7 +145,7 @@ test("bounds and expires in-memory rate-limit entries", () => {
 test("returns 503 without leaking smtp details when delivery fails", async () => {
   await withServer({
     sendQuoteMail: async () => {
-      throw new Error("smtp.163.com secret authorization code");
+      throw new Error("smtp.qq.com secret authorization code");
     },
   }, async (url) => {
     const response = await postJson(url, validQuote, { "X-Real-IP": "203.0.113.15" });

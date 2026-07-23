@@ -3,13 +3,13 @@ import test from "node:test";
 import { readConfig } from "../src/config.js";
 
 const validEnvironment = {
-  SMTP_HOST: "smtp.163.com",
+  SMTP_HOST: "smtp.qq.com",
   SMTP_PORT: "465",
   SMTP_SECURE: "true",
-  SMTP_USER: "zxl134679@163.com",
+  SMTP_USER: "909015753@qq.com",
   SMTP_PASS: "server-only-authorization-code",
-  MAIL_FROM: "zxl134679@163.com",
-  MAIL_TO: "zxl134679@163.com",
+  MAIL_FROM: "909015753@qq.com",
+  MAIL_TO: "909015753@qq.com",
   PORT: "8787",
 };
 
@@ -18,7 +18,7 @@ test("reads a complete fixed-recipient configuration", () => {
 
   assert.equal(config.smtp.port, 465);
   assert.equal(config.smtp.secure, true);
-  assert.equal(config.mailTo, "zxl134679@163.com");
+  assert.equal(config.mailTo, "909015753@qq.com");
   assert.equal(config.port, 8787);
 });
 
@@ -34,8 +34,8 @@ test("rejects missing credentials without printing their values", () => {
 
 test("rejects a changed recipient and invalid ports", () => {
   assert.throws(
-    () => readConfig({ ...validEnvironment, MAIL_TO: "attacker@example.com" }),
-    /MAIL_TO must be zxl134679@163\.com/,
+    () => readConfig({ ...validEnvironment, MAIL_TO: "zxl134679@163.com" }),
+    /MAIL_TO must be 909015753@qq\.com/,
   );
   assert.throws(
     () => readConfig({ ...validEnvironment, SMTP_PORT: "invalid" }),

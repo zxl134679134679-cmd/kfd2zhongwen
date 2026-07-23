@@ -38,7 +38,7 @@ describe("KFD website", () => {
     );
     expect(screen.getByText(/© 2026 青岛凯丰德包装有限公司/)).toBeInTheDocument();
     expect(screen.queryByText(/备案号待补充|ICP number pending/)).not.toBeInTheDocument();
-    expect(screen.getAllByText("zxl134679@163.com").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("909015753@qq.com").length).toBeGreaterThan(0);
   });
 
   test("public pages do not expose excluded customer names or placeholders", () => {

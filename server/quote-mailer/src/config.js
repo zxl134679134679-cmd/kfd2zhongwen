@@ -1,4 +1,4 @@
-const FIXED_RECIPIENT = "zxl134679@163.com";
+const FIXED_RECIPIENT = "909015753@qq.com";
 
 const REQUIRED_VARIABLES = [
   "SMTP_HOST",

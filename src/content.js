@@ -20,7 +20,7 @@ export const company = {
   address: "山东省青岛市莱西市姜山镇昌瑞西路77号",
   addressEn: "No.77 Changruixi Road, Jiangshan Town, Laixi, Qingdao, Shandong, China",
   phone: "+86 137 9329 3986",
-  email: "zxl134679@163.com",
+  email: "909015753@qq.com",
 };
 
 export const navLinks = [

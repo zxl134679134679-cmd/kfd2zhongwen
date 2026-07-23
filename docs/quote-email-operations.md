@@ -7,23 +7,23 @@
 - 程序目录：`/opt/kfd-quote-mailer`
 - 机密配置：`/etc/kfd-quote-mailer.env`
 - systemd 服务：`kfd-quote-mailer`
-- 固定收件人：`zxl134679@163.com`
+- 固定收件人：`909015753@qq.com`
 
 客户资料只用于当次邮件发送，不写入文件或数据库。日志只包含匿名请求编号和成功或失败状态。
 
-## 1. 准备163邮箱
+## 1. 准备QQ邮箱
 
-登录 `zxl134679@163.com`，在邮箱设置中开启 SMTP 服务并生成客户端授权码。授权码只在服务器上填写，不通过聊天发送，不保存到本项目或 GitHub。
+登录 `909015753@qq.com`，在邮箱设置中开启 IMAP/SMTP 服务并生成16位客户端授权码。授权码只在服务器上填写，不通过聊天发送，不保存到本项目或 GitHub。
 
 常用配置为：
 
 ```text
-SMTP_HOST=smtp.163.com
+SMTP_HOST=smtp.qq.com
 SMTP_PORT=465
 SMTP_SECURE=true
 ```
 
-如果163邮箱设置页面显示不同参数，以邮箱页面为准。
+如果QQ邮箱设置页面显示不同参数，以邮箱页面为准。
 
 ## 2. 安装程序
 
@@ -62,13 +62,13 @@ sudoedit /etc/kfd-quote-mailer.env
 在编辑器中填写：
 
 ```dotenv
-SMTP_HOST=smtp.163.com
+SMTP_HOST=smtp.qq.com
 SMTP_PORT=465
 SMTP_SECURE=true
-SMTP_USER=zxl134679@163.com
+SMTP_USER=909015753@qq.com
 SMTP_PASS="在这里亲自填写163客户端授权码"
-MAIL_FROM=zxl134679@163.com
-MAIL_TO=zxl134679@163.com
+MAIL_FROM=909015753@qq.com
+MAIL_TO=909015753@qq.com
 PORT=8787
 ```
 
@@ -150,7 +150,7 @@ systemctl reload nginx
 
 1. 浏览器提交接口返回 `204`。
 2. 网页显示“需求已发送”。
-3. `zxl134679@163.com` 收到一封字段完整的邮件。
+3. `909015753@qq.com` 收到一封字段完整的邮件。
 4. 服务日志中没有授权码和完整客户资料。
 5. 短时间重复提交会收到 `429`。
 6. 手机和电脑均能正常显示提交中、成功和失败状态。
