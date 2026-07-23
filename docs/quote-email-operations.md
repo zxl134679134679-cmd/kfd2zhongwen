@@ -104,8 +104,11 @@ journalctl -u kfd-quote-mailer -n 50 --no-pager
 先备份现有配置：
 
 ```bash
-cp -a /etc/nginx/sites-enabled/en-kfdpack /etc/nginx/sites-enabled/en-kfdpack.before-quote-mail
+install -d -o root -g root -m 700 /etc/nginx/kfd-backups
+cp -a /etc/nginx/sites-enabled/en-kfdpack /etc/nginx/kfd-backups/en-kfdpack.before-quote-mail
 ```
+
+备份不能放在 `sites-enabled` 目录中，否则 Nginx 会把备份当成第二个启用站点。
 
 把频率限制区域放到 Nginx 的 `http` 上下文。标准安装可以创建：
 
@@ -157,7 +160,7 @@ systemctl reload nginx
 如邮件接口影响网站，先恢复 Nginx：
 
 ```bash
-cp -a /etc/nginx/sites-enabled/en-kfdpack.before-quote-mail /etc/nginx/sites-enabled/en-kfdpack
+cp -a /etc/nginx/kfd-backups/en-kfdpack.before-quote-mail /etc/nginx/sites-enabled/en-kfdpack
 rm -f /etc/nginx/conf.d/kfd-quote-rate.conf
 nginx -t
 systemctl reload nginx
