@@ -4,6 +4,9 @@ qa/
 .npm-cache/
 .npmrc
 .worktrees/
+.env
+.env.*
+!.env.example
 
 .DS_Store
 *.swp
