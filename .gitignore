@@ -3,6 +3,7 @@ dist/
 qa/
 .npm-cache/
 .npmrc
+.worktrees/
 
 .DS_Store
 *.swp
